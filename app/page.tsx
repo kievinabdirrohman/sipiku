@@ -35,6 +35,12 @@ import { cn } from "@/lib/utils"
 
 import analyzeCV from "./actions";
 
+function isValidImageMimeType(mimeType: string | null | undefined): boolean {
+  if (!mimeType) return false;
+  const validMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']; // Add more as needed
+  return validMimeTypes.includes(mimeType.toLowerCase());
+}
+
 const fileSchema = z.object({
   file: z
     .instanceof(File, { message: "Wajib memilih file" })
@@ -44,9 +50,18 @@ const fileSchema = z.object({
     .refine((file) => file.size <= 1 * 1024 * 1024, {
       message: "Ukuran file maksimal 1 MB",
     }),
-  job_text: z.string().min(100, {
-    message: "Job Text must be at least 100 characters.",
-  }),
+  // job_text: z.string().min(100, {
+  //   message: "Job Text must be at least 100 characters.",
+  // }),
+  job_text: z.string().optional(),
+  image: z
+    .instanceof(File, { message: "Wajib memilih file" })
+    .refine((file) => isValidImageMimeType(file.type), {
+      message: "File harus berupa Gambar",
+    })
+    .refine((file) => file.size <= 1 * 1024 * 1024, {
+      message: "Ukuran file maksimal 1 MB",
+    }),
 });
 
 export default function Home() {
@@ -58,28 +73,30 @@ export default function Home() {
   });
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   const onSubmit = (values: z.infer<typeof fileSchema>) => {
     setPending(true);
     analyzeCV(values).then((res) => {
       setPending(false);
-      const resultElement = document.getElementById('result');
+      // const resultElement = document.getElementById('result');
       const resultJSON = JSON.parse(res.response!.replace(/```json\n?|```/g, ''));
+      console.log(resultJSON)
       
-      if (resultElement && resultJSON.cv_friendly && resultJSON.cv_friendly === true) {
-        console.log(resultJSON.result)
-        const list = document.createElement('ul');
-        list.className = 'list-disc list-inside';
-        Object.entries(resultJSON.result).forEach(([key, value]) => {
-          const item = document.createElement('li');
-          item.textContent = `${key}: ${value}`;
-          list.appendChild(item);
-        });
-        resultElement.innerHTML = '';
-        resultElement.appendChild(list);
-      } else {
-        resultElement!.textContent = resultJSON.result;
-      }
+      // if (resultElement && resultJSON.cv_friendly && resultJSON.cv_friendly === true) {
+      //   console.log(resultJSON.result)
+      //   const list = document.createElement('ul');
+      //   list.className = 'list-disc list-inside';
+      //   Object.entries(resultJSON.result).forEach(([key, value]) => {
+      //     const item = document.createElement('li');
+      //     item.textContent = `${key}: ${value}`;
+      //     list.appendChild(item);
+      //   });
+      //   resultElement.innerHTML = '';
+      //   resultElement.appendChild(list);
+      // } else {
+      //   resultElement!.textContent = resultJSON.result;
+      // }
 
     }).finally(() => setPending(false));
   };
@@ -115,6 +132,27 @@ export default function Home() {
               />
             </div>
             <div className="w-full">
+            <FormField
+                control={form.control}
+                name="image"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>CV Text</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          setSelectedImage(file || null);
+                          field.onChange(file);
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="job_text"
