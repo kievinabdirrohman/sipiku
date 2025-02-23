@@ -1,16 +1,15 @@
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer';
 
-// Register a custom font (replace with your preferred font file)
 Font.register({
     family: 'Open Sans',
-    src: '/fonts/arial_narrow_7.ttf' // Replace with your font URL or local path
+    src: '/fonts/arial_narrow_7.ttf'
 });
 
-// Define document styles
 const styles = StyleSheet.create({
     page: {
         fontFamily: 'Open Sans',
+        backgroundColor: '#ffffff',
         fontSize: 1,
         padding: 22,
     },
@@ -46,7 +45,7 @@ const styles = StyleSheet.create({
     },
     dateRange: {
         fontSize: 10,
-        marginLeft: 'auto', // Push to right
+        marginLeft: 'auto',
     },
     bulletPoint: {
         fontSize: 12,
@@ -93,24 +92,17 @@ const styles = StyleSheet.create({
 
 const ContactInfo = ({ contact }: any) => (
     <View style={styles.contactInfo}>
-        <Text style={styles.name}>{contact["full_name"]}</Text>
-        <Text>{contact['email_address']} | {contact['phone_number']} | {contact['address']} | {contact['website']}</Text>
+        <Text style={styles.name}>{contact.full_name}</Text>
+        <Text>{contact.email_address} | {contact.phone_number} | {contact.address} | {contact.website}</Text>
     </View>
 );
 
 const ExperienceItem = ({ item }: any) => (
     <View style={styles.sectionItem}>
-        <Text style={styles.subSectionTitle}>{item['job_title']}, {item['company_name']}</Text>
-        <Text style={styles.subJobCompany}>{item['dates_of_employment']}</Text>
-        <Text style={styles.subJobCompany}>{item['company_address']}</Text>
-        {item['job_description'].map((job_desc: any, index: number) =>
-        (
-            <View style={styles.row} key={index}>
-                <Text style={styles.bulletPoint}>•</Text>
-                <Text key={index} style={styles.content}>{job_desc.replace(/\*/g, '')}</Text>
-            </View>
-        )
-        )}
+        <Text style={styles.subSectionTitle}>{item.job_title}, {item.company_name}</Text>
+        <Text style={styles.subJobCompany}>{item.dates_of_employment}</Text>
+        <Text style={styles.subJobCompany}>{item.company_address}</Text>
+        <Text style={styles.content}>{item.job_description}</Text>
     </View>
 );
 
@@ -127,10 +119,10 @@ const Experience = ({ experiences }: any) => (
 const EducationItem = ({ item }: any) => (
     <View style={styles.sectionItem}>
         <View style={styles.row_between}>
-            <Text style={styles.subSectionTitle}>{item['institution_name']}</Text>
-            <Text style={styles.subJobCompany}>{item['dates_attended']}</Text>
+            <Text style={styles.subSectionTitle}>{item.institution_name}</Text>
+            <Text style={styles.subJobCompany}>{item.dates_attended}</Text>
         </View>
-        <Text style={styles.subJobCompany}>{item['degree']} | GPA: {item['gpa']}</Text>
+        <Text style={styles.subJobCompany}>{item.degree} | GPA: {item.gpa}</Text>
     </View>
 );
 
@@ -144,39 +136,24 @@ const Education = ({ education }: any) => (
     </View>
 );
 
-const Skills = ({ skills }: any) => (
-    <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Skills</Text>
-        <View style={styles.underline} />
-        <Text style={styles.subSectionTitle}>Technical Skills:</Text>
-        {skills['technical_skills'].map((skill: any, index: number) => (
-            <View style={styles.row} key={index}>
-                <Text style={styles.bulletPoint}>•</Text>
-                <Text style={styles.content}>{skill}</Text>
-            </View>
-        ))}
-        <Text style={styles.subSectionTitle}>Soft Skills:</Text>
-        {skills['soft_skills'].map((skill: any, index: number) => (
-            <View style={styles.row} key={index}>
-                <Text style={styles.bulletPoint}>•</Text>
-                <Text style={styles.content}>{skill}</Text>
-            </View>
-        ))}
-        <Text style={styles.subSectionTitle}>Languages:</Text>
-        {skills['languages'].map((skill: any, index: number) => (
-            <View style={styles.row} key={index}>
-                <Text style={styles.bulletPoint}>•</Text>
-                <Text style={styles.content}>{skill}</Text>
-            </View>
-        ))}
-    </View>
-);
+const Skills = ({ skills }: any) => {
+    return (
+        <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Skills</Text>
+            <View style={styles.underline} />
+            <Text style={styles.subSectionTitle}>Technical Skills:</Text>
+            <Text style={styles.content}>{skills.technical_skills}</Text>
+            <Text style={styles.subSectionTitle}>Soft Skills:</Text>
+            <Text style={styles.content}>{skills.soft_skills}</Text>
+        </View>
+    );
+};
 
 const CertificationItem = ({ item }: any) => (
     <View style={styles.sectionItem}>
-        <Text style={styles.subSectionTitle}>{item['name']}</Text>
-        <Text style={styles.subJobCompany}>{item['date']}</Text>
-        <Text style={styles.subJobCompany}>{item['institution']}</Text>
+        <Text style={styles.subSectionTitle}>{item.name}</Text>
+        <Text style={styles.subJobCompany}>{item.date}</Text>
+        <Text style={styles.subJobCompany}>{item.institution}</Text>
     </View>
 );
 
@@ -190,23 +167,18 @@ const Certification = ({ certification }: any) => (
     </View>
 );
 
-const Activities = ({ certification }: any) => (
+const Activities = ({ activities }: any) => (
     <View style={styles.section}>
         <Text style={styles.sectionTitle}>Activities and Interests</Text>
         <View style={styles.underline} />
-        {certification.map((item: any, index: any) => (
-            <View style={styles.row} key={index}>
-                <Text style={styles.bulletPoint}>•</Text>
-                <Text style={styles.content}>{item.replace(/\*/g, '')}</Text>
-            </View>
-        ))}
+        <Text style={styles.content}>{activities}</Text>
     </View>
 );
 
 const ProjectsItem = ({ item }: any) => (
     <View style={styles.sectionItem}>
-        <Text style={styles.subSectionTitle}>{item['name']}</Text>
-        <Text style={styles.subJobCompany}>{item['description'].replace(/\*/g, '')}</Text>
+        <Text style={styles.subSectionTitle}>{item.name}</Text>
+        <Text style={styles.subJobCompany}>{item.description}</Text>
     </View>
 );
 
@@ -232,14 +204,14 @@ const Resume = ({ data }: any) => {
     return (
         <Document>
             <Page size="A4" style={styles.page}>
-                {data["personal_information"] && <ContactInfo contact={data["personal_information"]} />}
-                {data['professional_summary'] && <Summary summary={data['professional_summary']} />}
-                {data['work_experience'] && <Experience experiences={data['work_experience']} />}
-                {data['education'] && <Education education={data['education']} />}
-                {data['skills'] && <Skills skills={data['skills']} />}
-                {data['awards_certifications'] && <Certification certification={data['awards_certifications']} />}
-                {data['activities_interests'] && <Activities certification={data['activities_interests']} />}
-                {data['projects'] && <Projects projects={data['projects']} />}
+                {data.personal_information && <ContactInfo contact={data.personal_information} />}
+                {data.professional_summary && <Summary summary={data.professional_summary} />}
+                {data.work_experience && <Experience experiences={data.work_experience} />}
+                {data.education && <Education education={data.education} />}
+                {data.skills && <Skills skills={data.skills} />}
+                {data.awards_certifications && <Certification certification={data.awards_certifications} />}
+                {data.activities_interests && <Activities activities={data.activities_interests} />}
+                {data.projects && <Projects projects={data.projects} />}
                 <View style={styles.card}>
                     <Text style={styles.subJobCompany}>Please Note: This AI-generated CV is a starting point. Carefully evaluate its suitability for each application. Enhance your CV with a CV builder to create a visually appealing and impactful document. We hope you achieve your career goals!</Text>
                 </View>
