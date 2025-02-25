@@ -35,20 +35,17 @@ export default function TopSection({ data }: any) {
             </div>
             <Card>
                 <CardHeader>
-                    <CardTitle>Assessment Summary</CardTitle>
+                    <CardTitle className="text-lg font-semibold">Assessment Summary</CardTitle>
                 </CardHeader>
-                <CardContent>
-                    <p>
-                        <strong>Overall Match:</strong> {overallMatch}
+                <CardContent className="flex flex-col gap-y-3">
+                    <p className="text-base">
+                        <span className="font-semibold">Summary:</span> {data.summary}
                     </p>
                     <p>
-                        <strong>Summary:</strong> {data.summary}
+                        <span className="font-semibold">Key Strengths:</span> {data.key_strengths}
                     </p>
                     <p>
-                        <strong>Key Strengths:</strong> {data.key_strengths}
-                    </p>
-                    <p>
-                        <strong>Areas for Improvement:</strong> {data.areas_for_improvement}
+                        <span className="font-semibold">Areas for Improvement:</span> {data.areas_for_improvement}
                     </p>
                 </CardContent>
             </Card>

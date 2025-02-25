@@ -5,16 +5,16 @@ export default function SkillAnalysis({ data }: any) {
     return (
         <Card className="mt-8">
             <CardHeader>
-                <CardTitle>Skill Analysis</CardTitle>
+                <CardTitle className="text-lg font-semibold">Skill Analysis</CardTitle>
             </CardHeader>
             <CardContent>
-                <h3 className="text-lg font-semibold mb-4">Matching Skills</h3>
+                <h3 className="text-base font-semibold mb-4">Matching Skills</h3>
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Skill</TableHead>
-                            <TableHead>Evidence in CV</TableHead>
-                            <TableHead>Recommendation</TableHead>
+                            <TableHead className="text-base text-black">Skill</TableHead>
+                            <TableHead className="text-base text-black">Evidence in CV</TableHead>
+                            <TableHead className="text-base text-black">Recommendation</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -28,13 +28,13 @@ export default function SkillAnalysis({ data }: any) {
                     </TableBody>
                 </Table>
 
-                <h3 className="text-lg font-semibold mb-4 mt-8">Missing Skills</h3>
+                <h3 className="text-base font-semibold mb-4 mt-8">Missing Skills</h3>
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Skill</TableHead>
-                            <TableHead>Reason</TableHead>
-                            <TableHead>Recommendation</TableHead>
+                            <TableHead className="text-base text-black">Skill</TableHead>
+                            <TableHead className="text-base text-black">Reason</TableHead>
+                            <TableHead className="text-base text-black">Recommendation</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>

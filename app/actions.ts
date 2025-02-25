@@ -11,24 +11,24 @@ const GOOGLE_GEMINI_API_KEY = process.env.GOOGLE_GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(GOOGLE_GEMINI_API_KEY!);
 const model = genAI.getGenerativeModel({
     model: process.env.GOOGLE_GEMINI_API_MODEL!,
-    safetySettings: [
-        {
-            category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-            threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
-        },
-        {
-            category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-            threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
-        },
-        {
-            category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-            threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
-        },
-        {
-            category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-            threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
-        },
-    ],
+    // safetySettings: [
+    //     {
+    //         category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+    //         threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+    //     },
+    //     {
+    //         category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    //         threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+    //     },
+    //     {
+    //         category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    //         threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+    //     },
+    //     {
+    //         category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    //         threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+    //     },
+    // ],
 });
 
 interface RecaptchaResponse {
@@ -881,6 +881,7 @@ export const analyzeCandidate = async (formData: z.infer<typeof candidateSchema>
 
             return {
                 errors: false,
+                hrd: false,
                 candidate: candidate_output,
                 revision: revision_output,
                 interview: interview_output
@@ -1014,7 +1015,8 @@ export const analyzeCandidate = async (formData: z.infer<typeof candidateSchema>
 
             return {
                 errors: false,
-                response: hrd_output
+                hrd: true,
+                data_hrd: hrd_output
             }
     }
 }

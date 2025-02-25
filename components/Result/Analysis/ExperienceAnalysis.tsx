@@ -5,17 +5,17 @@ export default function ExperienceAnalysis({ data }: any) {
     return (
         <Card className="mt-8">
             <CardHeader>
-                <CardTitle>Experience Analysis</CardTitle>
+                <CardTitle className="text-lg font-semibold">Experience Analysis</CardTitle>
             </CardHeader>
             <CardContent>
-                <h3 className="text-lg font-semibold mb-4">Relevant Experience</h3>
+                <h3 className="text-base font-semibold mb-4">Relevant Experience</h3>
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Company</TableHead>
-                            <TableHead>Role</TableHead>
-                            <TableHead>Relevance</TableHead>
-                            <TableHead>Recommendation</TableHead>
+                            <TableHead className="text-base text-black">Company</TableHead>
+                            <TableHead className="text-base text-black">Role</TableHead>
+                            <TableHead className="text-base text-black">Relevance</TableHead>
+                            <TableHead className="text-base text-black">Recommendation</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -30,8 +30,8 @@ export default function ExperienceAnalysis({ data }: any) {
                     </TableBody>
                 </Table>
 
-                <h3 className="text-lg font-semibold mb-4 mt-8">Less Relevant Experience</h3>
-                <p>{data.less_relevant_experience}</p>
+                <h3 className="text-base font-semibold mb-4 mt-8">Less Relevant Experience</h3>
+                <p className="text-sm">{data.less_relevant_experience}</p>
             </CardContent>
         </Card>
     )

@@ -5,44 +5,44 @@ export default function DetailedAnalysis({ data }: any) {
     return (
         <Card className="mt-8">
             <CardHeader>
-                <CardTitle>Detailed Analysis</CardTitle>
+                <CardTitle className="text-lg">Detailed Analysis</CardTitle>
             </CardHeader>
             <CardContent>
-                <Accordion type="single" collapsible className="w-full">
+                <Accordion type="multiple" defaultValue={["education", "work-experience", "skills", "other-requirements"]} className="w-full">
                     <AccordionItem value="education">
-                        <AccordionTrigger>Education</AccordionTrigger>
+                        <AccordionTrigger className="text-base font-semibold">Education</AccordionTrigger>
                         <AccordionContent>
-                            <p className={`mb-2 ${data.education.suitable ? "text-success" : "text-error"}`}>
+                            <p className={`mb-2 text-sm font-medium ${data.education.suitable === "Yes" ? "text-green-600" : "text-red-600"}`}>
                                 Suitable: {data.education.suitable === "Yes" ? "Yes" : "No"}
                             </p>
-                            <p>{data.education.detail}</p>
+                            <p className="text-sm font-normal">{data.education.detail}</p>
                         </AccordionContent>
                     </AccordionItem>
                     <AccordionItem value="work-experience">
-                        <AccordionTrigger>Work Experience</AccordionTrigger>
+                        <AccordionTrigger className="text-base font-semibold">Work Experience</AccordionTrigger>
                         <AccordionContent>
-                            <p className={`mb-2 ${data.work_experience.suitable ? "text-success" : "text-error"}`}>
+                            <p className={`mb-2 text-sm font-medium ${data.work_experience.suitable === "Yes" ? "text-green-600" : "text-red-600"}`}>
                                 Suitable: {data.work_experience.suitable === "Yes" ? "Yes" : "No"}
                             </p>
-                            <p>{data.work_experience.detail}</p>
+                            <p className="text-sm font-normal">{data.work_experience.detail}</p>
                         </AccordionContent>
                     </AccordionItem>
                     <AccordionItem value="skills">
-                        <AccordionTrigger>Skills</AccordionTrigger>
+                        <AccordionTrigger className="text-base font-semibold">Skills</AccordionTrigger>
                         <AccordionContent>
-                            <p className={`mb-2 ${data.skills.suitable ? "text-success" : "text-error"}`}>
+                            <p className={`mb-2 text-sm font-medium ${data.skills.suitable === "Yes" ? "text-green-600" : "text-red-600"}`}>
                                 Suitable: {data.skills.suitable === "Yes" ? "Yes" : "No"}
                             </p>
-                            <p>{data.skills.detail}</p>
+                            <p className="text-sm font-normal">{data.skills.detail}</p>
                         </AccordionContent>
                     </AccordionItem>
                     <AccordionItem value="other-requirements">
-                        <AccordionTrigger>Other Requirements</AccordionTrigger>
+                        <AccordionTrigger className="text-base font-semibold">Other Requirements</AccordionTrigger>
                         <AccordionContent>
-                            <p className={`mb-2 ${data.work_experience.suitable ? "text-success" : "text-error"}`}>
+                            <p className={`mb-2 text-sm font-medium ${data.work_experience.suitable === "Yes" ? "text-green-600" : "text-red-600"}`}>
                                 Suitable: {data.work_experience.suitable === "Yes" ? "Yes" : "No"}
                             </p>
-                            <p>{data.work_experience.detail}</p>
+                            <p className="text-sm font-normal">{data.work_experience.detail}</p>
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>

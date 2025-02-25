@@ -12,12 +12,14 @@ export default function Recommendations({ recommendation, warning, error }: { re
     return (
         <Card className="mt-8">
             <CardHeader>
-                <CardTitle>Recommendations, Warnings, and Errors</CardTitle>
+                <CardTitle className="text-lg font-semibold">Recommendations and Warnings</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-                <Alert>
-                    <CheckCircle className="h-4 w-4" />
-                    <AlertTitle>Recommendations</AlertTitle>
+                <Alert className="flex-col items-start">
+                    <div className="flex items-center gap-x-2 mb-2">
+                        <CheckCircle className="h-4 w-4" />
+                        <AlertTitle className="text-base">Recommendations</AlertTitle>
+                    </div>
                     <AlertDescription>
                         <ul className="list-disc pl-5">
                             {recommendations.map((rec, index) => (
@@ -27,9 +29,11 @@ export default function Recommendations({ recommendation, warning, error }: { re
                     </AlertDescription>
                 </Alert>
 
-                { warnings.length > 0 && <Alert variant="warning">
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertTitle>Warnings</AlertTitle>
+                {(warnings.length > 0 && warnings[0] !== "") && <Alert className="flex-col items-start" variant="warning">
+                    <div className="flex items-center gap-x-2 mb-2">
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertTitle className="text-base">Warnings</AlertTitle>
+                    </div>
                     <AlertDescription>
                         <ul className="list-disc pl-5">
                             {warnings.map((warning, index) => (
@@ -38,20 +42,6 @@ export default function Recommendations({ recommendation, warning, error }: { re
                         </ul>
                     </AlertDescription>
                 </Alert>}
-
-                {errors.length > 0 && (
-                    <Alert variant="destructive">
-                        <XCircle className="h-4 w-4" />
-                        <AlertTitle>Errors</AlertTitle>
-                        <AlertDescription>
-                            <ul className="list-disc pl-5">
-                                {errors.map((error, index) => (
-                                    <li key={index}>{error}</li>
-                                ))}
-                            </ul>
-                        </AlertDescription>
-                    </Alert>
-                )}
             </CardContent>
         </Card>
     )

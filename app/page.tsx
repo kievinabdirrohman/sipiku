@@ -53,6 +53,18 @@ import Recommendations from "@/components/Result/Analysis/Recommendations";
 import ScoringBreakdown from "@/components/Result/Analysis/ScoringBreakdown";
 import SkillAnalysis from "@/components/Result/Analysis/SkillAnalysis";
 import TopSection from "@/components/Result/Analysis/TopSection";
+import { HRDQuestions } from "@/components/Result/Interview/HRDQuestions";
+import { RedFlags } from "@/components/Result/Interview/RedFlags";
+import { TechnicalQuestions } from "@/components/Result/Interview/TechnicalQuestions";
+import { TabNavigation } from "@/components/Result/Interview/TabNavigation";
+import { CandidateAssessment } from "@/components/Result/HR/candidate-assessment";
+import { CandidateSummary } from "@/components/Result/HR/candidate-summary";
+import { CultureFitAssessment } from "@/components/Result/HR/culture-fit-assessment";
+import { EducationMatch } from "@/components/Result/HR/education-match";
+import { ExperienceMatch } from "@/components/Result/HR/experience-match";
+import { NotesForRecruiter } from "@/components/Result/HR/notes-for-recruiter";
+import { SkillMatch } from "@/components/Result/HR/skill-match";
+import { Warnings } from "@/components/Result/HR/warnings";
 
 const fadeVariants = {
   hidden: { opacity: 0, scale: 0.8, y: 20 },
@@ -99,9 +111,12 @@ export default function Home() {
   const [isFinished, setIsFinished] = useState<boolean>(false);
   const [updatedCV, setUpdatedCV] = useState<any>();
   const [analysis, setAnalysis] = useState<any>();
+  const [interview, setInterview] = useState<any>();
+  const [dataHR, setDataHR] = useState<any>();
   const [cvMessage, setCVMessage] = useState<string | null>(null);
   const [jobMessage, setJobMessage] = useState<string | null>(null);
   const [progressMessage, setProgressMessage] = useState<string | null>("Analyzing...");
+  const [activeTab, setActiveTab] = useState("hrd")
 
   useEffect(() => {
     const script = document.createElement('script')
@@ -159,6 +174,7 @@ export default function Home() {
   const cv_onsubmit = async (values: z.infer<typeof cvSchema>) => {
     setCVMessage(null);
     setPending(true);
+    setCandidate("");
     try {
       const token = await generateRecaptchaToken(values.role)
 
@@ -218,6 +234,8 @@ export default function Home() {
     setIsFinished(false);
     setUpdatedCV(null);
     setAnalysis(null);
+    setInterview(null);
+    setDataHR(null);
 
     try {
       if (selectedJobType === "file" && jobFile === null) {
@@ -263,10 +281,17 @@ export default function Home() {
           recaptcha_token: values.recaptcha_token,
         });
 
+        setIsFinished(true);
+
+        if (result.data_hrd && result.hrd === true) {
+          setDataHR(JSON.parse(result.data_hrd));
+          console.log(JSON.parse(result.data_hrd))
+        }
+
         if (result.revision) {
           setAnalysis(JSON.parse(result.candidate))
           setUpdatedCV(JSON.parse(result.revision));
-          setIsFinished(true);
+          setInterview(JSON.parse(result.interview));
 
           if (currentStep < steps.length - 1) {
             setCurrentStep((prev) => prev + 1);
@@ -283,6 +308,20 @@ export default function Home() {
       setPending(false);
     }
   }
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case "hrd":
+        return <HRDQuestions data={interview.hrd_interview_questions} />
+      case "technical":
+        return <TechnicalQuestions data={interview.technical_interview_questions} />
+      case "redFlags":
+        return <RedFlags data={interview.potential_red_flags} />
+      default:
+        return null
+    }
+  }
+
 
   return (
     <>
@@ -629,6 +668,13 @@ Collaborate with development teams and product managers to design and implement 
       {
         (candidate && isFinished && updatedCV) &&
         <>
+          <div className="min-h-screen">
+            <div className="container mx-auto px-4 py-8">
+              <h1 className="text-3xl font-bold text-center mb-8">Interview Guide</h1>
+              <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
+              <div className="mt-8">{renderContent()}</div>
+            </div>
+          </div>
           <div className="container mx-auto px-4 py-8">
             <h1 className="text-3xl font-bold mb-8">CV Analysis</h1>
             <div className="grid gap-8 md:grid-cols-2">
@@ -640,14 +686,29 @@ Collaborate with development teams and product managers to design and implement 
             <ExperienceAnalysis data={analysis.experience_analysis} />
             <Recommendations recommendation={analysis.recommendations} warning={analysis.warnings} error={analysis.error} />
           </div>
-          <PDFViewer showToolbar={false} style={{ width: '55%', height: '100vh', backgroundColor: 'transparent', border: 'none' }}>
-            <Resume data={updatedCV ?? []} />
-          </PDFViewer>
-          {/* <PDFDownloadLink document={<Resume data={updatedCV ?? []} />} fileName="cv_yourname_position.pdf">
-              {({ blob, url, loading, error }) =>
-                loading ? 'Loading document...' : 'Download now!'
-              }
-            </PDFDownloadLink> */}
+          <PDFDownloadLink document={<Resume data={updatedCV ?? []} />} fileName="cv_yourname_position.pdf">
+            {({ blob, url, loading, error }) =>
+              loading ? 'Loading document...' : 'Download now!'
+            }
+          </PDFDownloadLink>
+          <Button variant='outline' className="w-full text-sm" onClick={() => location.reload()}><ArrowBigLeft /> Re-Analyze</Button>
+        </>
+      }
+
+      {
+        (isFinished && dataHR) &&
+        <>
+          <div className="space-y-8">
+            <CandidateSummary data={dataHR.candidate_summary} />
+            <ScoringBreakdown data={dataHR.scoring_breakdown} />
+            <SkillMatch data={dataHR.skill_match} />
+            <ExperienceMatch data={dataHR.experience_match} />
+            <EducationMatch data={dataHR.education_match} />
+            <CultureFitAssessment data={dataHR.culture_fit_assessment} />
+            <RedFlags data={dataHR.red_flags} />
+            <NotesForRecruiter notes={dataHR.notes_for_recruiter} />
+            <Warnings warnings={dataHR.warnings} />
+          </div>
         </>
       }
     </>
