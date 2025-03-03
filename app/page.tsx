@@ -5,7 +5,7 @@ import { useCallback, useRef, useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { FileUp, OctagonX, X, FileIcon, Info, Loader2, BadgeCheck, ArrowBigLeft } from "lucide-react";
+import { FileUp, OctagonX, X, FileIcon, Info, Loader2, BadgeCheck, ArrowBigLeft, InfoIcon, Download } from "lucide-react";
 import { useDropzone } from 'react-dropzone';
 import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
 import { motion, AnimatePresence } from "framer-motion";
@@ -45,7 +45,7 @@ import Resume from "@/components/pages/resume";
 import { cn } from "@/lib/utils"
 import { cvSchema } from "@/lib/schema";
 
-import { analyzeCandidate, analyzeCV, analyzeJobPoster } from "./actions";
+import { analyzeCandidate, analyzeCV, analyzeJobPoster, transformPhoto } from "./actions";
 import StepIndicator from "@/components/Stepper/StepIndicator";
 import DetailedAnalysis from "@/components/Result/Analysis/DetailedAnalysis";
 import ExperienceAnalysis from "@/components/Result/Analysis/ExperienceAnalysis";
@@ -292,10 +292,10 @@ export default function Home() {
           setAnalysis(JSON.parse(result.candidate))
           setUpdatedCV(JSON.parse(result.revision));
           setInterview(JSON.parse(result.interview));
+        }
 
-          if (currentStep < steps.length - 1) {
-            setCurrentStep((prev) => prev + 1);
-          }
+        if (currentStep < steps.length - 1) {
+          setCurrentStep((prev) => prev + 1);
         }
       }
 
@@ -312,19 +312,69 @@ export default function Home() {
   const renderContent = () => {
     switch (activeTab) {
       case "hrd":
-        return <HRDQuestions data={interview.hrd_interview_questions} />
+        return <HRDQuestions data={interview.hrd_interview_questions ?? []} />
       case "technical":
-        return <TechnicalQuestions data={interview.technical_interview_questions} />
+        return <TechnicalQuestions data={interview.technical_interview_questions ?? []} />
       case "redFlags":
-        return <RedFlags data={interview.potential_red_flags} />
+        return <RedFlags data={interview.potential_red_flags ?? []} />
       default:
         return null
     }
   }
 
+  const [image, setImage] = useState<File | null>(null);
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setPending(true);
 
+    setGeneratedImage(null);
+
+    if (!image) {
+      setPending(false);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('photo', image);
+
+    const result = await transformPhoto(formData);
+
+    if (result?.errors === false) {
+      setGeneratedImage(result?.data!);
+
+    }
+
+    setPending(false);
+  };
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setImage(file);
+    }
+  };
   return (
     <>
+      <div>
+        <h1>Generate Image</h1>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="image">Image:</label>
+            <input type="file" id="image" accept="image/*" onChange={handleImageChange} />
+          </div>
+          <button type="submit" disabled={pending}>
+            {pending ? 'Generating...' : 'Generate'}
+          </button>
+        </form>
+
+        {generatedImage && (
+          <div>
+            <h2>Generated Image:</h2>
+            <img src={generatedImage} alt="Generated" style={{ maxWidth: '500px' }} />
+          </div>
+        )}
+      </div>
       <div className="flex justify-center">
         <div className="relative mb-12 w-1/3">
           <div className="flex justify-between relative z-50">
@@ -668,15 +718,8 @@ Collaborate with development teams and product managers to design and implement 
       {
         (candidate && isFinished && updatedCV) &&
         <>
-          <div className="min-h-screen">
-            <div className="container mx-auto px-4 py-8">
-              <h1 className="text-3xl font-bold text-center mb-8">Interview Guide</h1>
-              <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
-              <div className="mt-8">{renderContent()}</div>
-            </div>
-          </div>
           <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-8">CV Analysis</h1>
+            <h1 className="text-3xl font-bold mb-12 underline decoration-double">CV Analysis</h1>
             <div className="grid gap-8 md:grid-cols-2">
               <TopSection data={analysis.assessment_summary} />
               <ScoringBreakdown data={analysis.scoring_breakdown} />
@@ -685,20 +728,34 @@ Collaborate with development teams and product managers to design and implement 
             <SkillAnalysis data={analysis.skill_analysis} />
             <ExperienceAnalysis data={analysis.experience_analysis} />
             <Recommendations recommendation={analysis.recommendations} warning={analysis.warnings} error={analysis.error} />
+            <Separator className="my-10" />
+            <h1 className="text-3xl font-bold mb-12 underline decoration-double">Interview Guide</h1>
+            <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
+            <div className="mt-8">{renderContent()}</div>
+            <Separator className="my-10" />
+            <h1 className="text-3xl font-bold mt-12 mb-8 underline decoration-double">Download the revised CV</h1>
+            <p className="text-base font-medium mb-4">Your CV has been optimized by AI to highlight your skills and experience. Download now to see the improvements.</p>
+            <Alert variant="warning" className="flex-col items-start mb-8">
+              <div className="flex items-center gap-x-2 mb-2">
+                <InfoIcon className="h-4 w-4" />
+                <AlertDescription>
+                  Please Review Carefully: The recommendations and improvements provided by AI need to be carefully reviewed by you before use. AI can make mistakes or misinterpret information in your CV.
+                </AlertDescription>
+              </div>
+            </Alert>
+            <PDFDownloadLink className="px-8 bg-black text-white py-2 rounded-md flex flex-row w-fit" document={<Resume data={updatedCV ?? []} />} fileName="cv_yourname_position.pdf">
+              <Download />
+              <span className="ml-2">Download CV</span>
+            </PDFDownloadLink>
+            <Button variant='outline' className="text-sm mt-16" onClick={() => location.reload()}><ArrowBigLeft /> Back</Button>
           </div>
-          <PDFDownloadLink document={<Resume data={updatedCV ?? []} />} fileName="cv_yourname_position.pdf">
-            {({ blob, url, loading, error }) =>
-              loading ? 'Loading document...' : 'Download now!'
-            }
-          </PDFDownloadLink>
-          <Button variant='outline' className="w-full text-sm" onClick={() => location.reload()}><ArrowBigLeft /> Re-Analyze</Button>
         </>
       }
 
       {
         (isFinished && dataHR) &&
         <>
-          <div className="space-y-8">
+          <div className="container mx-auto px-4 py-8 space-y-8">
             <CandidateSummary data={dataHR.candidate_summary} />
             <ScoringBreakdown data={dataHR.scoring_breakdown} />
             <SkillMatch data={dataHR.skill_match} />
@@ -708,6 +765,7 @@ Collaborate with development teams and product managers to design and implement 
             <RedFlags data={dataHR.red_flags} />
             <NotesForRecruiter notes={dataHR.notes_for_recruiter} />
             <Warnings warnings={dataHR.warnings} />
+            <Button variant='outline' className="text-sm mt-16" onClick={() => location.reload()}><ArrowBigLeft /> Back</Button>
           </div>
         </>
       }

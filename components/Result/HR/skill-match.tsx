@@ -33,6 +33,7 @@ export function SkillMatch({ data }: any) {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
+                                {data.matching_skills.length === 0 && <TableRow><TableCell colSpan={3} className="text-center">No matching skills</TableCell></TableRow>}
                                 {data.matching_skills.map((skill: any, index: number) => (
                                     <TableRow key={index}>
                                         <TableCell>{skill.skill}</TableCell>
@@ -55,6 +56,7 @@ export function SkillMatch({ data }: any) {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
+                                {data.missing_skills.length === 0 && <TableRow><TableCell colSpan={2} className="text-center">No missing skills</TableCell></TableRow>}
                                 {data.missing_skills.map((skill: any, index: number) => (
                                     <TableRow key={index}>
                                         <TableCell>{skill.skill}</TableCell>

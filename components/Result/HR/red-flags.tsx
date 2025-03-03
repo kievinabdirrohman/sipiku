@@ -11,6 +11,7 @@ export function RedFlags({ data }: any) {
                 </CardTitle>
             </CardHeader>
             <CardContent>
+                {data.length === 0 && <p className="text-sm">No red flags found.</p>}
                 <ul className="list-disc list-inside space-y-1">
                     {data.map((flag: any, index: number) => (
                         <li key={index} className="text-sm">

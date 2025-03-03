@@ -17,7 +17,7 @@ const StepIndicator = ({ step, currentStep, label }: StepIndicatorProps) => {
                 className={cn(
                     "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300",
                     isCompleted ? "bg-black text-white" :
-                        isActive ? "bg-gray-600 shadow-lg border-2 border-gray-600 text-white" :
+                        isActive ? "bg-black shadow-lg border-2 border-black text-white" :
                             "bg-gray-100 text-gray-400"
                 )}
             >
@@ -29,7 +29,7 @@ const StepIndicator = ({ step, currentStep, label }: StepIndicatorProps) => {
             </div>
             <span className={cn(
                 "mt-2 text-sm font-medium transition-colors duration-300",
-                isActive ? "text-gray-600" :
+                isActive ? "text-black" :
                     isCompleted ? "text-black" :
                         "text-gray-400"
             )}>

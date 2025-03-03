@@ -50,6 +50,24 @@ export const candidateSchema = z.object({
     job_poster: z.string().min(100),
 });
 
+export const photoSchema = z.object({
+    file: z
+        .instanceof(File, { message: "You must select a file" })
+        .refine((file) => file.type === "application/pdf", {
+            message: "File must be a PDF",
+        })
+        .refine((file) => file.size <= 1 * 1024 * 1024, {
+            message: "File size must be a maximum of 1 MB",
+        }),
+    photo: z.instanceof(File).refine((file) => file.size <= 1000000, "Max image size is 1MB").refine(
+        (file) => ['image/jpeg', 'image/png', 'image/webp'].includes(file.type),
+        "Only .jpg, .png, .webp formats are supported"
+    ),
+    recaptcha_token: z.string(),
+    gender: z.enum(['male', 'female'], { required_error: "Gender is required" }),
+    ethnicity: z.enum(['asian', 'african', 'european', 'american', 'middle_eastern', 'pacific_islander'], { required_error: "Ethnicity is required" }),
+});
+
 export const schemaResult = {
     description: "Assessment result schema for Gemini API",
     type: SchemaType.OBJECT,
@@ -1076,8 +1094,26 @@ export const schemaHR = {
             description: "List of potential red flags identified in the CV.",
             nullable: false,
             items: {
-                type: SchemaType.STRING
-            }
+                type: SchemaType.OBJECT,
+                properties: {
+                    "area": {
+                        type: SchemaType.STRING,
+                        description: "Description of the potential red flag area.",
+                        nullable: false
+                    },
+                    "reason": {
+                        type: SchemaType.STRING,
+                        description: "Explanation of why the area is a potential concern.",
+                        nullable: false
+                    },
+                    "follow_up_question": {
+                        type: SchemaType.STRING,
+                        description: "A question to ask the candidate to clarify the potential red flag.",
+                        nullable: false
+                    }
+                },
+                required: ["area", "reason", "follow_up_question"] // All three fields are required
+            },
         },
         "notes_for_recruiter": {
             type: SchemaType.STRING,
@@ -1107,4 +1143,73 @@ export const schemaHR = {
         "warnings",
         "error"
     ]
+};
+
+export const cvSchemaOptimized = {
+    type: SchemaType.OBJECT,
+    description: 'CV Data Schema optimized for Gemini API input',
+    properties: {
+        personalInformation: {
+            type: SchemaType.OBJECT,
+            description: 'Personal information of the individual',
+            properties: {
+                fullName: { type: SchemaType.STRING, description: 'Full Name' },
+                address: { type: SchemaType.STRING, description: 'Address (optional)' },
+                phoneNumber: { type: SchemaType.STRING, description: 'Phone Number (optional)' },
+                emailAddress: { type: SchemaType.STRING, description: 'Email Address' },
+                linkedInProfile: { type: SchemaType.STRING, description: 'LinkedIn Profile URL (optional)' },
+            },
+            required: ['fullName', 'emailAddress'], // Example required fields
+        },
+        educationHistory: {
+            type: SchemaType.ARRAY,
+            description: 'Array of education history entries',
+            items: {
+                type: SchemaType.OBJECT,
+                properties: {
+                    institution: { type: SchemaType.STRING, description: 'Institution Name' },
+                    degree: { type: SchemaType.STRING, description: 'Degree Earned' },
+                    yearOfGraduation: { type: SchemaType.STRING, description: 'Year of Graduation' },
+                },
+                required: ['institution', 'degree', 'yearOfGraduation'],
+            },
+        },
+        workExperience: {
+            type: SchemaType.ARRAY,
+            description: 'Array of work experience entries',
+            items: {
+                type: SchemaType.OBJECT,
+                properties: {
+                    company: { type: SchemaType.STRING, description: 'Company Name' },
+                    jobTitle: { type: SchemaType.STRING, description: 'Job Title' },
+                    employmentPeriod: { type: SchemaType.STRING, description: 'Employment Period' },
+                    description: { type: SchemaType.STRING, description: 'Description of Responsibilities and Achievements (optional)' },
+                },
+                required: ['company', 'jobTitle', 'employmentPeriod'],
+            },
+        },
+        skills: {
+            type: SchemaType.ARRAY,
+            description: 'Array of skills',
+            items: { type: SchemaType.STRING, description: 'Skill Name' }, // Simple string array for skills
+        },
+        references: {
+            type: SchemaType.ARRAY,
+            description: 'Array of references',
+            items: {
+                type: SchemaType.OBJECT,
+                properties: {
+                    referenceName: { type: SchemaType.STRING, description: 'Reference Name (optional)' },
+                    contactInformation: { type: SchemaType.STRING, description: 'Contact Information (optional)' },
+                },
+                required: [], // No required fields for references if they are optional
+            },
+        },
+        certificationsAndAwards: {
+            type: SchemaType.ARRAY,
+            description: 'Array of certifications and awards',
+            items: { type: SchemaType.STRING, description: 'Certification/Award Name' }, // Simple string array
+        },
+    },
+    required: ['personalInformation', 'educationHistory', 'workExperience', 'skills'], // Example top-level required fields
 };

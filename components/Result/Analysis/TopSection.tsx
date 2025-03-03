@@ -8,7 +8,7 @@ export default function TopSection({ data }: any) {
             <div className="flex items-center justify-center">
                 <div className="relative w-48 h-48">
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="text-4xl font-bold">{overallMatch}</div>
+                        <div className="text-4xl font-bold">{overallMatch}%</div>
                     </div>
                     <svg className="w-full h-full" viewBox="0 0 100 100">
                         <circle

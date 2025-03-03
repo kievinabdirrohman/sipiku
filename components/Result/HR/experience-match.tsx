@@ -11,6 +11,7 @@ export function ExperienceMatch({ data }: any) {
                     <div>
                         <h3 className="text-lg font-semibold mb-2">Relevant Experience</h3>
                         <div className="space-y-4">
+                            {data.relevant_experience.length === 0 && <p className="text-sm">No relevant experience found.</p>}
                             {data.relevant_experience.map((experience: any, index: number) => (
                                 <Card key={index}>
                                     <CardContent className="p-4">
@@ -26,7 +27,7 @@ export function ExperienceMatch({ data }: any) {
                     </div>
                     <div>
                         <h3 className="text-lg font-semibold mb-2">Irrelevant Experience</h3>
-                        <p className="text-sm">{data.irrelevant_experience}</p>
+                        <p className="text-sm">{data.irrelevant_experience || "No irrelevant experience found."}</p>
                     </div>
                 </div>
             </CardContent>
