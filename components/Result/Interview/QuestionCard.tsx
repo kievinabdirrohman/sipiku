@@ -25,7 +25,7 @@ export function QuestionCard({
     return (
         <div className="bg-white shadow-md rounded-lg mb-4 overflow-hidden">
             <div className="flex justify-between items-center p-4 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
-                <h3 className="text-lg font-semibold">{question}</h3>
+                <h3 className="text-base md:text-lg font-semibold">{question}</h3>
                 {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
             </div>
             {isExpanded && (

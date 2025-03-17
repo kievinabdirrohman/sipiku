@@ -3,7 +3,7 @@ import { AlertTriangle } from "lucide-react"
 export function RedFlags({ data }: any) {
     return (
         <div>
-            <h2 className="text-2xl font-bold mb-4">Potential Red Flags</h2>
+            <h2 className="text-xl md:text-2xl font-bold mb-4">Potential Red Flags</h2>
             {data.map((flag: any, index: number) => (
                 <div key={index} className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">
                     <div className="flex items-center mb-2">

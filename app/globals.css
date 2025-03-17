@@ -201,9 +201,35 @@ body {
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
+    background: linear-gradient(135deg, #2c3e50, #4a5568, #2d3748);
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl shadow-xl;
+  }
+  
+  .login-btn {
+    @apply flex items-center justify-center gap-2 w-full py-3 px-6 bg-white text-gray-800 
+           font-medium rounded-lg transition-all hover:shadow-lg hover:bg-gray-100;
+  }
+
+  .google-btn {
+    @apply flex items-center justify-center gap-2 w-full py-3 px-6 bg-white text-gray-800 
+           font-medium rounded-lg transition-all hover:shadow-lg hover:bg-gray-100;
+  }
+  
+  .section-title {
+    @apply text-2xl sm:text-2xl font-bold text-white mb-2;
+  }
+  
+  .section-subtitle {
+    @apply text-gray-300 mb-6 text-sm sm:text-base;
   }
 }

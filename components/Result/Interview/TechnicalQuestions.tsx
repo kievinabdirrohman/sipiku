@@ -13,7 +13,7 @@ export function TechnicalQuestions({ data }: any) {
 
     return (
         <div>
-            <h2 className="text-2xl font-bold mb-4">Technical Interview Questions</h2>
+            <h2 className="text-xl md:text-2xl font-bold mb-4">Technical Interview Questions</h2>
             <div className="mb-4">
                 <label htmlFor="seniority" className="mr-2">
                     Seniority Level:

@@ -5,7 +5,7 @@ import { useCallback, useRef, useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { FileUp, OctagonX, X, FileIcon, Info, Loader2, BadgeCheck, ArrowBigLeft, InfoIcon, Download } from "lucide-react";
+import { FileUp, OctagonX, X, FileIcon, Info, Loader2, BadgeCheck, ArrowBigLeft, InfoIcon, Download, GraduationCap, Briefcase } from "lucide-react";
 import { useDropzone } from 'react-dropzone';
 import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
 import { motion, AnimatePresence } from "framer-motion";
@@ -43,9 +43,9 @@ import { Separator } from "@/components/ui/separator"
 import Resume from "@/components/pages/resume";
 
 import { cn } from "@/lib/utils"
-import { cvSchema } from "@/lib/schema";
+import { cvSchema, linkedinAccountSchema } from "@/lib/schema";
 
-import { analyzeCandidate, analyzeCV, analyzeJobPoster, transformPhoto } from "./actions";
+import { analyzeCandidate, analyzeCV, analyzeJobPoster, authenticate, getLinkedinProfile, transformPhoto } from "./actions";
 import StepIndicator from "@/components/Stepper/StepIndicator";
 import DetailedAnalysis from "@/components/Result/Analysis/DetailedAnalysis";
 import ExperienceAnalysis from "@/components/Result/Analysis/ExperienceAnalysis";
@@ -322,60 +322,103 @@ export default function Home() {
     }
   }
 
-  const [image, setImage] = useState<File | null>(null);
-  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const formLinkedin = useForm<z.infer<typeof linkedinAccountSchema>>({
+    // resolver: zodResolver(linkedinAccountSchema),
+    defaultValues: {
+      email: 'kievin.abdrohman@gmail.com',
+      password: '@Kyven1298',
+    },
+  });
+  const submitLinkedIn = async (values: z.infer<typeof linkedinAccountSchema>) => {
     setPending(true);
 
-    setGeneratedImage(null);
+    try {
+      const token = await generateRecaptchaToken(values.email.replace(/[^A-Za-z_]/g, ''))
 
-    if (!image) {
+      values.recaptcha_token = token;
+
+      const response = await getLinkedinProfile(values);
+
+      console.log(response);
+    } catch (error) {
+      setCVMessage("Whoops! Something went wrong.");
+    } finally {
       setPending(false);
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('photo', image);
-
-    const result = await transformPhoto(formData);
-
-    if (result?.errors === false) {
-      setGeneratedImage(result?.data!);
-
-    }
-
-    setPending(false);
-  };
-
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setImage(file);
     }
   };
+
+  const [redirectUrl, setRedirectUrl] = useState<string>('/insider');
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirect = urlParams.get('redirect') || '/insider';
+    setRedirectUrl(redirect);
+  }, []);
+
   return (
-    <>
-      <div>
-        <h1>Generate Image</h1>
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="image">Image:</label>
-            <input type="file" id="image" accept="image/*" onChange={handleImageChange} />
-          </div>
-          <button type="submit" disabled={pending}>
-            {pending ? 'Generating...' : 'Generate'}
-          </button>
-        </form>
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 md:p-6">
+      {/* <div>
+        <h1>LinkedIn</h1>
+        <Form {...formLinkedin}>
+          <form onSubmit={formLinkedin.handleSubmit(submitLinkedIn)} className="space-y-4">
+            <FormField
+              control={formLinkedin.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="your.email@example.com"
+                      type="email"
+                      autoComplete="email"
+                      disabled={pending}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        {generatedImage && (
-          <div>
-            <h2>Generated Image:</h2>
-            <img src={generatedImage} alt="Generated" style={{ maxWidth: '500px' }} />
-          </div>
-        )}
-      </div>
-      <div className="flex justify-center">
+            <FormField
+              control={formLinkedin.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="••••••••"
+                      type="password"
+                      autoComplete="current-password"
+                      disabled={pending}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={pending}
+            >
+              {pending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                'Sign in'
+              )}
+            </Button>
+          </form>
+        </Form>
+      </div> */}
+      {/* <div className="flex justify-center">
         <div className="relative mb-12 w-1/3">
           <div className="flex justify-between relative z-50">
             {steps.map((step, index) => (
@@ -768,7 +811,70 @@ Collaborate with development teams and product managers to design and implement 
             <Button variant='outline' className="text-sm mt-16" onClick={() => location.reload()}><ArrowBigLeft /> Back</Button>
           </div>
         </>
-      }
-    </>
+      } */}
+      <div className="text-center mb-10">
+        <h1 className="text-2xl md:text-3xl font-bold text-white mb-5">
+          SK-Fomalhout-001
+        </h1>
+        <p className="text-gray-300 text-lg max-w-2xl mx-auto mb-10">
+          AI-powered career tools for headshot generation, LinkedIn profile analysis, and precise job matching
+        </p>
+        <div className="glass-card p-8 md:p-10 w-full max-w-4xl mx-auto overflow-hidden">
+          <div className="flex flex-col md:flex-row gap-12 md:gap-16">
+            <div className="w-full md:w-1/2 md:border-r border-gray-700/50 pr-0 md:pr-8">
+              <div className="flex flex-col items-center md:items-start">
+                <div className="flex items-center gap-2 mb-3">
+                  <GraduationCap className="h-6 w-6 text-white" />
+                  <h2 className="section-title">Job Seeker?</h2>
+                </div>
+                <p className="section-subtitle text-center md:text-left">
+                  Supercharge your job search with AI-powered CV analysis, personalized job recommendations, and a professional headshot.
+                </p>
+              </div>
+            </div>
+
+            <div className="w-full md:w-1/2 md:pl-8 border-t md:border-t-0 border-gray-700/50 pt-8 md:pt-0">
+              <div className="flex flex-col items-center md:items-start">
+                <div className="flex items-center gap-2 mb-3">
+                  <Briefcase className="h-6 w-6 text-white" />
+                  <h2 className="section-title">Hiring Manager?</h2>
+                </div>
+                <p className="section-subtitle text-center md:text-left">
+                  Find the best candidates faster with AI-driven CV screening, accurate job matching, and comprehensive LinkedIn profile insights.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8 flex justify-center">
+            <button onClick={() => authenticate(redirectUrl)} className="google-btn mt-2 w-64 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48" className="mr-2">
+                <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z" />
+                <path fill="#FF3D00" d="m6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z" />
+                <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z" />
+                <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z" />
+              </svg>
+              Sign in with Google
+            </button>
+          </div>
+
+          <div className="mt-10 pt-6 border-t border-gray-700/50 text-center">
+            <p className="text-gray-400 text-sm">
+              By signing in, you agree to our{" "}
+              <a href="#" className="text-black font-medium">
+                Terms of Service
+              </a>{" "}
+              and{" "}
+              <a href="#" className="text-black font-medium">
+                Privacy Policy
+              </a>
+            </p>
+          </div>
+        </div>
+        <div className="mt-8 text-gray-400 text-sm text-center">
+          © {new Date().getFullYear()} SiKepin. All rights reserved.
+        </div>
+      </div>
+    </div>
   );
 }

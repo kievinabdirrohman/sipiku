@@ -50,6 +50,16 @@ export const candidateSchema = z.object({
     job_poster: z.string().min(100),
 });
 
+export const linkedinAccountSchema = z.object({
+    recaptcha_token: z.string(),
+    email: z.string().email({
+        message: "Invalid email address",
+    }),
+    password: z.string().min(3, {
+        message: "Password must be at least 3 characters long",
+    }),
+});
+
 export const photoSchema = z.object({
     file: z
         .instanceof(File, { message: "You must select a file" })
