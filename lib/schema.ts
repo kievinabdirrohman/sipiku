@@ -1223,3 +1223,120 @@ export const cvSchemaOptimized = {
     },
     required: ['personalInformation', 'educationHistory', 'workExperience', 'skills'], // Example top-level required fields
 };
+
+export const linkedInProfileAnalysisSchema = {
+    type: SchemaType.OBJECT,
+    description: 'Schema for analyzing and providing feedback on a LinkedIn profile.',
+    properties: {
+        overallSummary: {
+            type: SchemaType.OBJECT,
+            description: 'Summary of the profile\'s overall analysis',
+            properties: {
+                strengths: { type: SchemaType.STRING, description: '[Summary of the profile\'s strengths]' },
+                weaknesses: { type: SchemaType.STRING, description: '[Summary of the profile\'s weaknesses]' },
+                overallRecommendation: { type: SchemaType.STRING, description: '[Overall recommendation for improvement]' },
+            },
+            required: ['strengths', 'weaknesses', 'overallRecommendation'],
+        },
+        recruiterAppeal: {
+            type: SchemaType.OBJECT,
+            description: 'Analysis of the profile\'s appeal to recruiters',
+            properties: {
+                keywordAnalysis: {
+                    type: SchemaType.OBJECT,
+                    description: 'Analysis of keyword usage in the profile',
+                    properties: {
+                        relevantKeywords: { type: SchemaType.STRING, description: '[List of general keywords relevant to professional profiles]' },
+                        keywordUsage: { type: SchemaType.STRING, description: '[Analysis of keyword usage in the profile]' },
+                        keywordRecommendations: { type: SchemaType.STRING, description: '[Keyword optimization suggestions]' },
+                    },
+                    required: ['relevantKeywords', 'keywordUsage', 'keywordRecommendations'],
+                },
+                titleEvaluation: {
+                    type: SchemaType.OBJECT,
+                    description: 'Evaluation of the profile title',
+                    properties: {
+                        attractiveness: { type: SchemaType.STRING, description: '[Rating of the title\'s attractiveness (Scale 1-5)]' },
+                        informativeness: { type: SchemaType.STRING, description: '[Rating of the title\'s informativeness (Scale 1-5)]' },
+                        seoOptimization: { type: SchemaType.STRING, description: '[Rating of the title\'s SEO optimization (Scale 1-5)]' },
+                        recommendations: { type: SchemaType.STRING, description: '[Suggestions for title improvement]' },
+                    },
+                    required: ['attractiveness', 'informativeness', 'seoOptimization', 'recommendations'],
+                },
+                summaryEvaluation: {
+                    type: SchemaType.OBJECT,
+                    description: 'Evaluation of the profile summary',
+                    properties: {
+                        engagement: { type: SchemaType.STRING, description: '[Rating of the summary\'s engagement (Scale 1-5)]' },
+                        readability: { type: SchemaType.STRING, description: '[Rating of the summary\'s readability (Scale 1-5)]' },
+                        valueProposition: { type: SchemaType.STRING, description: '[Analysis of the summary\'s conveyance of a unique value proposition]' },
+                        recommendations: { type: SchemaType.STRING, description: '[Suggestions for summary improvement]' },
+                    },
+                    required: ['engagement', 'readability', 'valueProposition', 'recommendations'],
+                },
+                experienceQuantification: { type: SchemaType.STRING, description: '[Analysis of the quantification of work experience]' },
+                grammarAndProfessionalism: { type: SchemaType.STRING, description: '[Assessment of grammar, spelling, and professional tone]' },
+            },
+            required: ['keywordAnalysis', 'titleEvaluation', 'summaryEvaluation', 'experienceQuantification', 'grammarAndProfessionalism'],
+        },
+        searchVisibility: {
+            type: SchemaType.OBJECT,
+            description: 'Analysis of the profile\'s search visibility',
+            properties: {
+                seoLinkedIn: { type: SchemaType.STRING, description: '[Overall LinkedIn SEO optimization suggestions]' },
+                skillsOptimization: { type: SchemaType.STRING, description: '[Analysis and optimization recommendations for the skills section]' },
+                recommendationStrategy: { type: SchemaType.STRING, description: '[Strategy for obtaining quality recommendations]' },
+            },
+            required: ['seoLinkedIn', 'skillsOptimization', 'recommendationStrategy'],
+        },
+        personalBranding: {
+            type: SchemaType.OBJECT,
+            description: 'Analysis of the profile\'s personal branding',
+            properties: {
+                brandConsistency: { type: SchemaType.STRING, description: '[Evaluation of personal brand consistency across profile sections]' },
+                contentStrategy: { type: SchemaType.STRING, description: '[Content strategy suggestions]' },
+                engagementTips: { type: SchemaType.STRING, description: '[Engagement tips, suggesting how to interact with connections, join relevant groups, and participate in discussions]' },
+                profilePictureEvaluation: { type: SchemaType.STRING, description: '[Assessment of the profile picture]' },
+            },
+            required: ['brandConsistency', 'contentStrategy', 'engagementTips', 'profilePictureEvaluation'],
+        },
+        networkingAndConnections: {
+            type: SchemaType.OBJECT,
+            description: 'Suggestions for networking and building connections',
+            properties: {
+                relevantConnections: { type: SchemaType.STRING, description: '[Suggestions on how to identify and connect with relevant individuals]' },
+                outreachMessageTips: { type: SchemaType.STRING, description: '[Tips for crafting effective outreach messages]' },
+                relationshipBuilding: { type: SchemaType.STRING, description: '[Guidance on building and maintaining relationships with LinkedIn connections]' },
+            },
+            required: ['relevantConnections', 'outreachMessageTips', 'relationshipBuilding'],
+        },
+        overallRecommendationForTargetGoal: { type: SchemaType.STRING, description: '[General and actionable suggestions for improving the profile]' },
+        stepByStepActionPlan: {
+            type: SchemaType.OBJECT,
+            description: 'Step-by-step action plan for profile improvement',
+            properties: {
+                day1: { type: SchemaType.STRING, description: '[Specific task for day 1]' },
+                day2: { type: SchemaType.STRING, description: '[Specific task for day 2]' },
+                day3: { type: SchemaType.STRING, description: '[Specific task for day 3]' },
+                day4: { type: SchemaType.STRING, description: '[Specific task for day 4]' },
+                day5: { type: SchemaType.STRING, description: '[Specific task for day 5]' },
+                day6: { type: SchemaType.STRING, description: '[Specific task for day 6]' },
+                day7: { type: SchemaType.STRING, description: '[Specific task for day 7]' },
+            },
+            required: ['day1', 'day2', 'day3', 'day4', 'day5', 'day6', 'day7'],
+        },
+        warnings: { type: SchemaType.STRING, description: '[Warning messages if there is unclear or incomplete information in the LinkedIn profile]' },
+        error: { type: SchemaType.STRING, description: '[If an error occurred during processing, a detailed explanation of the error. Otherwise, this field MUST be empty.]' },
+    },
+    required: [
+        'overallSummary',
+        'recruiterAppeal',
+        'searchVisibility',
+        'personalBranding',
+        'networkingAndConnections',
+        'overallRecommendationForTargetGoal',
+        'stepByStepActionPlan',
+        'warnings',
+        'error',
+    ],
+};

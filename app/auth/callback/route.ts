@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 // The client you created from the Server-Side Auth instructions
 import { createClient } from '@/utils/supabase/server'
+import { cookies } from 'next/headers'
 
 export async function GET(request: Request) {
     const { searchParams, origin } = new URL(request.url)
@@ -10,10 +11,14 @@ export async function GET(request: Request) {
 
     if (code) {
         const supabase = await createClient()
-        const { error } = await supabase.auth.exchangeCodeForSession(code)
+        const { data, error } = await supabase.auth.exchangeCodeForSession(code)
         if (!error) {
             const forwardedHost = request.headers.get('x-forwarded-host') // original origin before load balancer
             const isLocalEnv = process.env.NODE_ENV === 'development'
+            const cookieStore = await cookies()
+
+            cookieStore.set('my-email', data.user.email?.split('@')[0] ?? '');
+
             if (isLocalEnv) {
                 // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
                 return NextResponse.redirect(`${origin}${next}`)

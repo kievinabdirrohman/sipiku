@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { login, signup } from './actions'
+import { authenticate } from './actions'
 
 export default function LoginPage() {
     const [redirectUrl, setRedirectUrl] = useState<string>('/');
@@ -14,7 +14,7 @@ export default function LoginPage() {
 
     return (
         <form>
-            <button onClick={() => signup(redirectUrl)}>Sign up</button>
+            <button onClick={() => authenticate(redirectUrl)}>Sign up</button>
         </form>
     )
 }

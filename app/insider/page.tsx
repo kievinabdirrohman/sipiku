@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { FileUp, OctagonX, X, FileIcon, Info, Loader2, BadgeCheck, ArrowBigLeft, InfoIcon, Download } from "lucide-react";
+import { FileUp, OctagonX, X, FileIcon, Info, Loader2, BadgeCheck, ArrowBigLeft, InfoIcon, Download, GraduationCap, Briefcase, ClockAlert } from "lucide-react";
 import { useDropzone } from 'react-dropzone';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { motion, AnimatePresence } from "framer-motion";
@@ -14,7 +14,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { pusherClient } from '@/lib/pusher'
 import { cn } from "@/lib/utils"
-import { generateRecaptchaToken } from "@/lib/helper";
+import { generateRecaptchaToken, getUser } from "@/lib/helper";
 import { cvSchema } from "@/lib/schema";
 import { createClient } from "@/utils/supabase/client";
 
@@ -56,30 +56,33 @@ import { Warnings } from "@/components/Result/HR/warnings";
 
 import { analyzeCandidate, analyzeCV, analyzeJobPoster } from "./actions";
 
-
-const getUser = async () => {
-    const supabase = createClient();
-
-    const {
-        data: { user },
-    } = await supabase.auth.getUser()
-
-    return user;
-}
-
 export default function JobAnalyzer() {
     const supabase = createClient();
 
-    const { data, isLoading, error } = useQuery({
+    const { data } = useQuery({
         queryKey: ['candidateHistory'],
         queryFn: async () => {
             const user = await getUser();
             const { data } = await supabase
                 .from('job_analysis')
                 .select('role, result')
-                .eq('email', user?.email)
+                .eq('email', user)
                 .eq('role', 'candidate');
-            
+
+            return data
+        }
+    })
+
+    const { data: dataHRD } = useQuery({
+        queryKey: ['hrdHistory'],
+        queryFn: async () => {
+            const user = await getUser();
+            const { data } = await supabase
+                .from('job_analysis')
+                .select('role, result')
+                .eq('email', user)
+                .eq('role', 'hrd');
+
             return data
         }
     })
@@ -110,6 +113,7 @@ export default function JobAnalyzer() {
     const [progressMessage, setProgressMessage] = useState<string | null>("Analyzing...");
     const [activeTab, setActiveTab] = useState("hrd")
     const [isHistoryCandidate, setIsHistoryCandidate] = useState<boolean>(false);
+    const [isHistoryHRD, setIsHistoryHRD] = useState<boolean>(false);
 
     useEffect(() => {
         const script = document.createElement('script')
@@ -315,7 +319,7 @@ export default function JobAnalyzer() {
     }
 
     useEffect(() => {
-        if (data) {
+        if (data && data.length > 0) {
             const candidateElement = document.getElementById("candidate") as HTMLInputElement | null;
             const hrdElement = document.getElementById("hrd") as HTMLInputElement | null;
             if (candidateElement) {
@@ -324,11 +328,21 @@ export default function JobAnalyzer() {
             }
             hrdElement?.click();
         }
-    }, [data])
+
+        if (dataHRD && dataHRD.length > 0) {
+            const hrdElement = document.getElementById("hrd") as HTMLInputElement | null;
+            const candidateElement = document.getElementById("candidate") as HTMLInputElement | null;
+            if (hrdElement) {
+                setIsHistoryHRD(true);
+                hrdElement.disabled = true;
+            }
+            candidateElement?.click();
+        }
+    }, [data, dataHRD])
 
     return (
         <>
-            <div className="flex justify-center">
+            {(isHistoryCandidate === false || isHistoryHRD === false) && <div className="flex justify-center">
                 <div className="relative mb-12 w-full md:w-1/3">
                     <div className="flex justify-between relative z-50">
                         {steps.map((step, index) => (
@@ -347,12 +361,12 @@ export default function JobAnalyzer() {
                         />
                     </div>
                 </div>
-            </div>
+            </div>}
 
             <div className="flex justify-center">
                 {(!candidate && !isFinished && !updatedCV) &&
                     <div className="w-full md:w-1/3" >
-                        <Form {...cv_form}>
+                        {(isHistoryCandidate === false || isHistoryHRD === false) && <Form {...cv_form}>
                             <form onSubmit={cv_form.handleSubmit(cv_onsubmit)} className="space-y-6" encType="multipart/form-data">
                                 <FormField
                                     control={cv_form.control}
@@ -377,14 +391,14 @@ export default function JobAnalyzer() {
                                                             Job Hunter
                                                         </FormLabel>
                                                     </FormItem>}
-                                                    <FormItem className={`flex items-center space-x-3 space-y-0 border ${selectedRole === "hrd" && "border-black bg-muted"} rounded w-full p-3 justify-center`}>
+                                                    {isHistoryHRD === false && <FormItem className={`flex items-center space-x-3 space-y-0 border ${selectedRole === "hrd" && "border-black bg-muted"} rounded w-full p-3 justify-center`}>
                                                         <FormControl>
                                                             <RadioGroupItem value="hrd" id="hrd" />
                                                         </FormControl>
                                                         <FormLabel className="tomorrow-medium text-base">
                                                             HR/Recruiter
                                                         </FormLabel>
-                                                    </FormItem>
+                                                    </FormItem>}
                                                 </RadioGroup>
                                             </FormControl>
                                             <Alert variant="warning">
@@ -479,13 +493,20 @@ export default function JobAnalyzer() {
                                     )}
                                     {!pending && "Analyze CV Now!"}
                                 </Button>
-                                {(!pending && isHistoryCandidate === true) && <Button onClick={() => {
-                                    router.push('/insider/result-candidate')
-                                }} type="button" variant="outline" className="w-full text-base py-6">
-                                    Show the Result
-                                </Button>}
                             </form>
-                        </Form>
+                        </Form>}
+                        <div className="space-y-6 mt-6">
+                            {(!pending && isHistoryCandidate === true) && <Button onClick={() => {
+                                router.push('/insider/result-candidate')
+                            }} type="button" className="w-full text-base py-6 bg-blue-100 text-blue-700 hover:bg-blue-200">
+                                <GraduationCap className="mr-1" /> Show Job Hunter Result
+                            </Button>}
+                            {(!pending && isHistoryHRD === true) && <Button onClick={() => {
+                                router.push('/insider/result-hrd')
+                            }} type="button" className="w-full text-base py-6 bg-teal-100 text-teal-700 hover:bg-teal-200">
+                                <Briefcase className="mr-1" /> Show HR/Recruiter Result
+                            </Button>}
+                        </div>
                     </div>
                 }
 

@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from "react"
-import { ChevronUp, GalleryVerticalEnd, Loader2, User2 } from "lucide-react"
+import { ChevronUp, ClockAlert, GalleryVerticalEnd, Loader2, User2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
@@ -26,6 +26,7 @@ import { linkedinAccountSchema } from "@/lib/schema"
 import { generateRecaptchaToken } from "@/lib/helper"
 
 import { getLinkedinProfile } from "@/app/actions"
+import { Alert, AlertDescription } from "./ui/alert"
 
 const items = [
     {
@@ -63,7 +64,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                     </div>
                                     <div className="flex flex-col gap-0.5 leading-none">
                                         <span className="font-semibold">SK-Fomalhout-001</span>
-                                        <span className="">v1.0.0</span>
+                                        <span className="">v0.0.1-alpha</span>
                                     </div>
                                 </a>
                             </SidebarMenuButton>
@@ -93,6 +94,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <SidebarRail />
                 <SidebarFooter>
                     <SidebarMenu>
+                        <SidebarMenuItem>
+                            <Alert variant="warning">
+                                <AlertDescription className="text-xs tomorrow-normal">
+                                    This App is experimental (alpha) and All features can only be used once.
+                                </AlertDescription>
+                            </Alert>
+                        </SidebarMenuItem>
                         <SidebarMenuItem>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>

@@ -13,6 +13,7 @@ import { TabNavigation } from "@/components/Result/Interview/TabNavigation";
 import { TechnicalQuestions } from "@/components/Result/Interview/TechnicalQuestions";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { getUser } from "@/lib/helper";
 import { createClient } from "@/utils/supabase/client";
 import { Separator } from "@radix-ui/react-separator";
 import { PDFDownloadLink } from "@react-pdf/renderer";
@@ -21,27 +22,17 @@ import { InfoIcon, Download, ArrowBigLeft } from "lucide-react";
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from "react";
 
-const getUser = async () => {
+export default function ResultCandidate() {
     const supabase = createClient();
 
-    const {
-        data: { user },
-    } = await supabase.auth.getUser()
-
-    return user;
-}
-
-export default function JobAnalyzer() {
-    const supabase = createClient();
-
-    const { data, isLoading, error } = useQuery({
+    const { data } = useQuery({
         queryKey: ['candidateHistory'],
         queryFn: async () => {
             const user = await getUser();
             const { data } = await supabase
                 .from('job_analysis')
                 .select('role, result')
-                .eq('email', user?.email)
+                .eq('email', user)
                 .eq('role', 'candidate');
 
             return data
@@ -90,7 +81,7 @@ export default function JobAnalyzer() {
                 <ExperienceAnalysis data={analysis.experience_analysis} />
                 <Recommendations recommendation={analysis.recommendations} warning={analysis.warnings} error={analysis.error} />
                 <Separator className="my-10" />
-                <h1 className="text-xl md:text-3xl font-bold mb-12 underline decoration-double">Interview Guide</h1>
+                <h1 className="text-xl md:text-3xl font-bold mb-12 underline decoration-double">Mock Interview</h1>
                 <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
                 <div className="mt-8">{renderContent()}</div>
                 <Separator className="my-10" />

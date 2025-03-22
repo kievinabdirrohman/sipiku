@@ -705,9 +705,7 @@ export const analyzeCandidate = async (formData: z.infer<typeof candidateSchema>
                             "advice": "[Advice on gathering information about skill 3]",
                         "behavioral_questions": "[Example behavioral questions for skill 3]"
                         }
-                    },
-                    "warnings": "[Warning messages if there is unclear or incomplete information in the Analysis Result Before, the Existing CV, or the Job Posting.  Be specific.]",
-                    "error": "[If an error occurred during processing, a detailed explanation of the error. Otherwise, this field MUST be empty.]"
+                    }
                 }
             `;
 
@@ -819,6 +817,20 @@ export const analyzeCandidate = async (formData: z.infer<typeof candidateSchema>
             });
 
             const hrd_output = hrd_result.response.text();
+
+            const supabaseHRD = await createClient();
+
+            const {
+                data: { user: userHRD },
+            } = await supabaseHRD.auth.getUser()
+
+            await supabaseHRD
+                .from('job_analysis')
+                .insert({
+                    email: userHRD?.email,
+                    role: validatedCandidate.data.role,
+                    result: JSON.stringify(hrd_output)
+                })
 
             return {
                 errors: false,
