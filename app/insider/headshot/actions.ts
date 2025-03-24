@@ -409,9 +409,9 @@ export const transformPhoto = async (formData: FormData) => {
 
     const modelImage = genAI.getGenerativeModel({
         model: "gemini-2.0-flash-exp-image-generation",
-        generationConfig: {
-            responseModalities: ['Text', 'Image']
-        },
+        // generationConfig: {
+        //     responseModalities: ['Text', 'Image']
+        // },
     });
 
     const response = await modelImage.generateContent(`Generate an image of the ${headshotPrompt}`);
