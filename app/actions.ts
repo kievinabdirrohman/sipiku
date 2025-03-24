@@ -1923,7 +1923,7 @@ export async function authenticate(redirectUrl: string) {
     const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-            redirectTo: 'http://localhost:3000/auth/callback?next=' + redirectUrl,
+            redirectTo: `${process.env.BASE_URL!}/auth/callback?next=` + redirectUrl,
             queryParams: {
                 access_type: 'offline',
                 prompt: 'consent',
