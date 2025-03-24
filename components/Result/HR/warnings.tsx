@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertTriangle, XOctagon } from "lucide-react"
 
-export function Warnings({ warnings }: { warnings: string[] }) {
+export function Warnings({ warnings }: any) {
     return (
         <Card>
             <CardHeader>

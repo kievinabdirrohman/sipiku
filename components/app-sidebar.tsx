@@ -1,9 +1,7 @@
 'use client'
 
 import * as React from "react"
-import { ChevronUp, ClockAlert, GalleryVerticalEnd, Loader2, User2 } from "lucide-react"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { ChevronUp, GalleryVerticalEnd, User2 } from "lucide-react"
 
 import {
     Sidebar,
@@ -17,40 +15,28 @@ import {
     SidebarRail,
 } from "@/components/ui/sidebar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog"
-import { Button } from "./ui/button"
-import { Input } from "./ui/input"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
 
-import { linkedinAccountSchema } from "@/lib/schema"
-import { generateRecaptchaToken } from "@/lib/helper"
-
-import { getLinkedinProfile } from "@/app/actions"
 import { Alert, AlertDescription } from "./ui/alert"
 
 const items = [
     {
         title: "Job Analyzer",
         url: "/insider",
-        isActive: true,
+        isActive: false,
     },
-    {
-        title: "Headshot",
-        url: "/insider/headshot",
-    },
+    // {
+    //     title: "Headshot",
+    //     url: "/insider/headshot",
+    //     isActive: false,
+    // },
     {
         title: "LinkedIn Analyzer",
         url: "/insider/linkedin",
+        isActive: false,
     },
 ]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-    const [dialogOpen, setDialogOpen] = React.useState(false);
-
-    const handleConnectClick = () => {
-        setDialogOpen(true);
-    };
-
     return (
         <>
             <Sidebar {...props}>
@@ -76,18 +62,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         <SidebarMenu>
                             {items.map((item) => (
                                 <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton isActive={item.isActive} asChild>
+                                    <SidebarMenuButton asChild>
                                         <a href={item.url}>
                                             <span>{item.title}</span>
                                         </a>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
                             ))}
-                            <SidebarMenuItem key="connect_to_linkedin">
-                                <SidebarMenuButton onClick={handleConnectClick}>
-                                    Connect to LinkedIn
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
                         </SidebarMenu>
                     </SidebarGroup>
                 </SidebarContent>
@@ -105,7 +86,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <SidebarMenuButton>
-                                        <User2 /> Username
+                                        <User2 /> Account
                                         <ChevronUp className="ml-auto" />
                                     </SidebarMenuButton>
                                 </DropdownMenuTrigger>
@@ -126,119 +107,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     </SidebarMenu>
                 </SidebarFooter>
             </Sidebar>
-
-            <LinkedInConnectDialog
-                isOpen={dialogOpen}
-                onClose={() => setDialogOpen(false)}
-            />
         </>
     )
 }
-
-interface LinkedInConnectDialogProps {
-    isOpen: boolean;
-    onClose: () => void;
-}
-
-const LinkedInConnectDialog: React.FC<LinkedInConnectDialogProps> = ({ isOpen, onClose }) => {
-    const [pending, setPending] = React.useState<boolean>(false);
-
-    const formLinkedin = useForm<z.infer<typeof linkedinAccountSchema>>({
-        defaultValues: {
-            email: 'kievin.abdrohman@gmail.com',
-            password: '@Kyven1298',
-        },
-    });
-    const submitLinkedIn = async (values: z.infer<typeof linkedinAccountSchema>) => {
-        setPending(true);
-
-        try {
-            const token = await generateRecaptchaToken(values.email.replace(/[^A-Za-z_]/g, ''))
-
-            values.recaptcha_token = token;
-
-            const response = await getLinkedinProfile(values);
-
-            console.log(response);
-        } catch (error) {
-            //   setCVMessage("Whoops! Something went wrong.");
-        } finally {
-            setPending(false);
-        }
-    };
-    return (
-        <Dialog open={isOpen} onOpenChange={(open) => {
-            if (pending) {
-                return;
-            }
-            !open && onClose()
-        }}>
-            <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                    <DialogTitle>Connect to Your LinkedIn Account</DialogTitle>
-                    <DialogDescription>
-                        Get in-depth LinkedIn profile analysis and recommendations to boost your visibility.
-                    </DialogDescription>
-                </DialogHeader>
-                <Form {...formLinkedin}>
-                    <form onSubmit={formLinkedin.handleSubmit(submitLinkedIn)} className="space-y-4">
-                        <FormField
-                            control={formLinkedin.control}
-                            name="email"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Email LinkedIn</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            placeholder="your.email@example.com"
-                                            type="email"
-                                            autoComplete="email"
-                                            disabled={pending}
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={formLinkedin.control}
-                            name="password"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Password LinkedIn</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            placeholder="••••••••"
-                                            type="password"
-                                            autoComplete="current-password"
-                                            disabled={pending}
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <Button
-                            type="submit"
-                            className="w-full"
-                            disabled={pending}
-                        >
-                            {pending ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Connecting...
-                                </>
-                            ) : (
-                                'Connect'
-                            )}
-                        </Button>
-                    </form>
-                </Form>
-            </DialogContent>
-        </Dialog>
-    );
-};

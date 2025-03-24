@@ -15,6 +15,7 @@ export const textSchema = z.object({
 });
 
 export const cvSchema = z.object({
+    using_linkedin: z.boolean().default(false).optional(),
     recaptcha_token: z.string(),
     role: z.enum(["candidate", "hrd"], {
         required_error: "Role is required",

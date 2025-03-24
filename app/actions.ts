@@ -1571,6 +1571,8 @@ const parseEmploymentPeriod = (period: any) => {
 };
 
 async function extractProfileData(page: any, targetProfile = '') {
+    await pusher.trigger('result', 'get-result', "Analyzing Profile...");
+
     await autoScroll(page);
 
     const result = await page.locator('.scaffold-layout__row main').screenshot({ fullPage: true });
@@ -1717,6 +1719,7 @@ async function autoScroll(page: any) {
 }
 
 async function extractBasicInfo(page: any) {
+    await pusher.trigger('result', 'get-result', "Analyzing Basic Info...");
     try {
         const basicInfo = await page.evaluate(() => {
             const nameElement = document.querySelector('.artdeco-hoverable-trigger a h1');
@@ -1737,6 +1740,7 @@ async function extractBasicInfo(page: any) {
 }
 
 async function extractAbout(page: any) {
+    await pusher.trigger('result', 'get-result', "Analyzing About Section...");
     try {
         const aboutText = await page.evaluate(() => {
             const aboutElement = document.querySelector('.artdeco-card.pv-profile-card .display-flex.ph5.pv3 div div div .visually-hidden');
@@ -1751,6 +1755,7 @@ async function extractAbout(page: any) {
 }
 
 async function extractContactInfo(page: any, targetProfile = '') {
+    await pusher.trigger('result', 'get-result', "Analyzing Contact Info...");
     try {
         await page.goto(`${targetProfile}/overlay/contact-info/`, {
             waitUntil: 'domcontentloaded',
@@ -1831,6 +1836,7 @@ async function extractContactInfo(page: any, targetProfile = '') {
 }
 
 async function extractDetails(page: any, targetProfile: string, detail: string) {
+    await pusher.trigger('result', 'get-result', "Analyzing Details...");
     try {
         await page.goto(`${targetProfile}/details/${detail}/`, {
             waitUntil: 'domcontentloaded',

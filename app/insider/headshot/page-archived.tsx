@@ -1,26 +1,9 @@
 "use client"
 
-import { useCallback, useRef, useState, useEffect } from "react";
-
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { FileUp, OctagonX, X, FileIcon, Info, Loader2, BadgeCheck, ArrowBigLeft, InfoIcon, Download } from "lucide-react";
-import { useDropzone } from 'react-dropzone';
-import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
-import { motion, AnimatePresence } from "framer-motion";
-import { pusherClient } from '@/lib/pusher'
+import { useState, useEffect } from "react";
+import { Info, Download, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
 import {
     Card,
     CardContent,
@@ -29,67 +12,15 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import {
-    Alert,
-    AlertDescription,
-    AlertTitle,
-} from "@/components/ui/alert"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Progress } from "@/components/ui/progress"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Separator } from "@/components/ui/separator"
-import Resume from "@/components/pages/resume";
-
-import { cn } from "@/lib/utils"
-import { cvSchema } from "@/lib/schema";
-
-import { analyzeCandidate, analyzeCV, analyzeJobPoster, transformPhoto } from "../actions";
-import StepIndicator from "@/components/Stepper/StepIndicator";
-import DetailedAnalysis from "@/components/Result/Analysis/DetailedAnalysis";
-import ExperienceAnalysis from "@/components/Result/Analysis/ExperienceAnalysis";
-import Recommendations from "@/components/Result/Analysis/Recommendations";
-import ScoringBreakdown from "@/components/Result/Analysis/ScoringBreakdown";
-import SkillAnalysis from "@/components/Result/Analysis/SkillAnalysis";
-import TopSection from "@/components/Result/Analysis/TopSection";
-import { HRDQuestions } from "@/components/Result/Interview/HRDQuestions";
-import { RedFlags } from "@/components/Result/Interview/RedFlags";
-import { TechnicalQuestions } from "@/components/Result/Interview/TechnicalQuestions";
-import { TabNavigation } from "@/components/Result/Interview/TabNavigation";
-import { CandidateAssessment } from "@/components/Result/HR/candidate-assessment";
-import { CandidateSummary } from "@/components/Result/HR/candidate-summary";
-import { CultureFitAssessment } from "@/components/Result/HR/culture-fit-assessment";
-import { EducationMatch } from "@/components/Result/HR/education-match";
-import { ExperienceMatch } from "@/components/Result/HR/experience-match";
-import { NotesForRecruiter } from "@/components/Result/HR/notes-for-recruiter";
-import { SkillMatch } from "@/components/Result/HR/skill-match";
-import { Warnings } from "@/components/Result/HR/warnings";
-import { useToast } from "@/hooks/use-toast";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FileUploader } from "@/components/pages/file-uploader";
 
-declare global {
-    interface Window {
-        grecaptcha: {
-            ready: (callback: () => void) => void;
-            execute: (siteKey: string, options: { action: string }) => Promise<string>;
-        };
-    }
-}
-
-const generateRecaptchaToken = async (action: string) => {
-    try {
-        return await window.grecaptcha.execute(
-            process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!,
-            { action }
-        )
-    } catch (error) {
-        console.error('reCAPTCHA error:', error)
-        throw new Error('Failed to generate reCAPTCHA token')
-    }
-}
+import { transformPhoto } from "./actions";
+import { useToast } from "@/hooks/use-toast";
+import { generateRecaptchaToken } from "@/lib/helper";
 
 export default function Headshot() {
     useEffect(() => {
@@ -105,7 +36,6 @@ export default function Headshot() {
     const { toast } = useToast()
     const [step, setStep] = useState<"form" | "processing" | "result">("form")
     const [hasUsed, setHasUsed] = useState<boolean>(false)
-    const [progress, setProgress] = useState<number>(0)
     const [headshot, setHeadshot] = useState<string | null>(null)
     const [gender, setGender] = useState<string>("male")
     const [ethnicity, setEthnicity] = useState<string>("asian")
@@ -125,7 +55,6 @@ export default function Headshot() {
     }
 
     const handleFacePhotoChange = (file: File | null) => {
-        // New function for face photo
         if (file && !file.type.startsWith("image/")) {
             toast({
                 title: "Unsupported file format",
@@ -175,7 +104,6 @@ export default function Headshot() {
             if (headshotUrl?.errors === false) {
                 setHeadshot(headshotUrl.data!)
                 setHasUsed(true)
-                setProgress(100)
                 setStep("result")
             }
         } catch (error) {
@@ -190,7 +118,6 @@ export default function Headshot() {
 
     const handleDownload = () => {
         if (headshot) {
-            // In a real implementation, this would download the actual image
             const link = document.createElement("a")
             link.href = headshot
             link.download = "headshot-ai.png"
@@ -206,9 +133,7 @@ export default function Headshot() {
     }
 
     const handleReset = () => {
-        // In a real implementation, this would be limited or disabled
         setStep("form")
-        setProgress(0)
     }
 
     return (
@@ -328,28 +253,16 @@ export default function Headshot() {
                                     </Select>
                                 </div>
 
-                                <Button type="submit" className="w-full" size="lg" disabled={hasUsed || !cvFile || !facePhoto}>
-                                    Generate My Headshot
+                                <Button type="submit" className="w-full" size="lg" disabled={hasUsed || !cvFile || !facePhoto || step !== "form"}>
+                                    {step !== "form" && (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            Generating...
+                                        </>
+                                    )}
+                                    {step === "form" && "Generate My Headshot"}
                                 </Button>
-
-                                {hasUsed && headshot && (
-                                    <div className="flex justify-center">
-                                        <Button type="button" variant="outline" onClick={() => setStep("result")}>
-                                            View My Headshot
-                                        </Button>
-                                    </div>
-                                )}
                             </form>
-                        )}
-
-                        {step === "processing" && (
-                            <div className="space-y-8 py-10">
-                                <h3 className="text-xl font-semibold text-center">Generating Your Headshot...</h3>
-                                <Progress value={progress} className="h-2 w-full" />
-                                <p className="text-center text-muted-foreground">
-                                    Please wait, our AI is generating a professional headshot for you. This may take a few minutes.
-                                </p>
-                            </div>
                         )}
 
                         {step === "result" && headshot && (
@@ -357,7 +270,7 @@ export default function Headshot() {
                                 <h3 className="text-xl font-semibold text-center">Your AI Headshot is Ready!</h3>
 
                                 <div className="flex justify-center">
-                                    <div className="relative w-64 h-64 md:w-80 md:h-80 border rounded-lg overflow-hidden">
+                                    <div className="relative w-full border rounded-lg overflow-hidden">
                                         <img src={headshot || "/placeholder.svg"} alt="AI Generated Headshot" className="object-cover" />
                                     </div>
                                 </div>

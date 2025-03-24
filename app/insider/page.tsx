@@ -53,6 +53,9 @@ import { ExperienceMatch } from "@/components/Result/HR/experience-match";
 import { NotesForRecruiter } from "@/components/Result/HR/notes-for-recruiter";
 import { SkillMatch } from "@/components/Result/HR/skill-match";
 import { Warnings } from "@/components/Result/HR/warnings";
+import { Switch } from "@/components/ui/switch";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import LoadingPage from "@/components/LoadingPage";
 
 import { analyzeCandidate, analyzeCV, analyzeJobPoster } from "./actions";
 
@@ -87,6 +90,19 @@ export default function JobAnalyzer() {
         }
     })
 
+    const { data: dataLinkedIn } = useQuery({
+        queryKey: ['linkedinProfile'],
+        queryFn: async () => {
+            const user = await getUser();
+            const { data } = await supabase
+                .from('linkedin_analysis')
+                .select('profile, result')
+                .eq('email', user);
+
+            return data
+        }
+    });
+
     const steps = [
         { label: "Pick CV" },
         { label: "Pick Job" },
@@ -108,12 +124,20 @@ export default function JobAnalyzer() {
     const [analysis, setAnalysis] = useState<any>();
     const [interview, setInterview] = useState<any>();
     const [dataHR, setDataHR] = useState<any>();
+    const [dataLinkedInProfile, setDataLinkedInProfile] = useState<any>();
     const [cvMessage, setCVMessage] = useState<string | null>(null);
     const [jobMessage, setJobMessage] = useState<string | null>(null);
     const [progressMessage, setProgressMessage] = useState<string | null>("Analyzing...");
     const [activeTab, setActiveTab] = useState("hrd")
     const [isHistoryCandidate, setIsHistoryCandidate] = useState<boolean>(false);
     const [isHistoryHRD, setIsHistoryHRD] = useState<boolean>(false);
+    const [isLinkedIn, setIsLinkedIn] = useState<boolean>(false);
+    const [openLinkedIn, setOpenLinkedIn] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const handleOpenLinkedIn = (isOpen: boolean) => {
+        setOpenLinkedIn(isOpen);
+    };
 
     useEffect(() => {
         const script = document.createElement('script')
@@ -144,6 +168,7 @@ export default function JobAnalyzer() {
             role: "candidate",
             file: undefined,
             recaptcha_token: "",
+            using_linkedin: false,
         },
     });
 
@@ -318,6 +343,10 @@ export default function JobAnalyzer() {
         }
     }
 
+    const handleLoadingComplete = useCallback(() => {
+        setIsLoading(false);
+    }, []);
+
     useEffect(() => {
         if (data && data.length > 0) {
             const candidateElement = document.getElementById("candidate") as HTMLInputElement | null;
@@ -338,12 +367,25 @@ export default function JobAnalyzer() {
             }
             candidateElement?.click();
         }
-    }, [data, dataHRD])
+
+        if (dataLinkedIn && dataLinkedIn.length > 0) {
+            setIsLinkedIn(true);
+
+            setDataLinkedInProfile(dataLinkedIn[0].profile)
+        }
+
+        setIsLoading(false);
+    }, [data, dataHRD, dataLinkedIn])
 
     return (
         <>
+            <LoadingPage
+                isDoneLoading={!isLoading}
+                message="Please Wait"
+                onLoadingComplete={handleLoadingComplete}
+            />
             {(isHistoryCandidate === false || isHistoryHRD === false) && <div className="flex justify-center">
-                <div className="relative mb-12 w-full md:w-1/3">
+                {!isLoading && <div className="relative mb-12 w-full md:w-1/3">
                     <div className="flex justify-between relative z-50">
                         {steps.map((step, index) => (
                             <StepIndicator
@@ -360,10 +402,10 @@ export default function JobAnalyzer() {
                             style={{ width: `${(currentStep / (steps.length - 1)) * 100}%` }}
                         />
                     </div>
-                </div>
+                </div>}
             </div>}
 
-            <div className="flex justify-center">
+            {!isLoading && <div className="flex justify-center">
                 {(!candidate && !isFinished && !updatedCV) &&
                     <div className="w-full md:w-1/3" >
                         {(isHistoryCandidate === false || isHistoryHRD === false) && <Form {...cv_form}>
@@ -412,6 +454,34 @@ export default function JobAnalyzer() {
                                     )}
                                 />
                                 <Separator />
+                                {selectedRole === "candidate" && <FormField
+                                    control={cv_form.control}
+                                    name="using_linkedin"
+                                    render={({ field }) => (
+                                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                                            <div className="space-y-0.5">
+                                                <FormLabel>Use LinkedIn Profile</FormLabel>
+                                            </div>
+                                            <FormControl>
+                                                <Switch
+                                                    checked={field.value}
+                                                    onCheckedChange={(value) => {
+                                                        if (value === true && isLinkedIn === false) {
+                                                            setOpenLinkedIn(true);
+                                                        } else {
+                                                            setCandidate(dataLinkedInProfile);
+
+                                                            if (currentStep < steps.length - 1) {
+                                                                setCurrentStep((prev) => prev + 1);
+                                                            }
+                                                            field.onChange(value);
+                                                        }
+                                                    }}
+                                                />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />}
                                 <FormField
                                     control={cv_form.control}
                                     name="file"
@@ -689,6 +759,7 @@ Collaborate with development teams and product managers to design and implement 
                                     {!pending && <Button variant='outline' className="w-full text-sm" onClick={() => {
                                         setCandidate("");
                                         if (currentStep > 0) {
+                                            cv_form.setValue('using_linkedin', false);
                                             setCurrentStep((prev) => prev - 1);
                                         }
                                     }}><ArrowBigLeft /> Update CV</Button>}
@@ -697,7 +768,7 @@ Collaborate with development teams and product managers to design and implement 
                         </motion.div>
                     </AnimatePresence>
                 }
-            </div>
+            </div>}
 
             {
                 (candidate && isFinished && updatedCV) &&
@@ -753,6 +824,22 @@ Collaborate with development teams and product managers to design and implement 
                     </div>
                 </>
             }
+
+            <AlertDialog open={openLinkedIn} onOpenChange={handleOpenLinkedIn}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>LinkedIn Profile is Incomplete</AlertDialogTitle>
+                        <AlertDialogDescription className="text-black">
+                            Sorry, you cannot use this feature because data <span className="font-semibold">LinkedIn Profile</span> is incomplete. Please complete first to enable this functionality.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Later</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => router.push('/insider/linkedin')}>Complete Now</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
         </>
     );
 }

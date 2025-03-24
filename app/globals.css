@@ -232,4 +232,20 @@ body {
   .section-subtitle {
     @apply text-gray-300 mb-6 text-sm sm:text-base;
   }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .linkedin-gradient {
+    @apply bg-gradient-to-r text-white;
+  }
+  
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow hover:-translate-y-1;
+  }
+  
+  .text-gradient {
+    @apply bg-gradient-to-r bg-clip-text text-transparent;
+  }
 }
