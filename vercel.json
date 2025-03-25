@@ -1,10 +1,15 @@
 {
     "version": 2,
-    "build": {
-        "env": {
-            "PLAYWRIGHT_BROWSERS_PATH": "0"
+    "functions": {
+        "app/insider/linkedin/actions.ts": {
+            "memory": 3008,
+            "maxDuration": 60
         }
     },
-    "installCommand": "npm install && npx playwright install --with-deps",
-    "buildCommand": "npm run build"
+    "rewrites": [
+        {
+            "source": "/app/insider/linkedin/actions",
+            "destination": "/app/insider/linkedin/actions.ts"
+        }
+    ]
 }
