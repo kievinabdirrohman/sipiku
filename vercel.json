@@ -1,0 +1,10 @@
+{
+    "version": 2,
+    "build": {
+        "env": {
+            "PLAYWRIGHT_BROWSERS_PATH": "0"
+        }
+    },
+    "installCommand": "npm install",
+    "buildCommand": "npx playwright install --with-deps && npm run build"
+}
