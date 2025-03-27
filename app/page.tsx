@@ -817,7 +817,7 @@ Collaborate with development teams and product managers to design and implement 
           SK-Fomalhout-001
         </h1>
         <p className="text-gray-300 text-lg max-w-2xl mx-auto mb-10">
-          AI-powered career tools for headshot generation, LinkedIn profile analysis, and precise job matching
+          AI-powered career tools for precise job matching
         </p>
         <div className="glass-card p-8 md:p-10 w-full max-w-4xl mx-auto overflow-hidden">
           <div className="flex flex-col md:flex-row gap-12 md:gap-16">
@@ -828,7 +828,7 @@ Collaborate with development teams and product managers to design and implement 
                   <h2 className="section-title">Job Seeker?</h2>
                 </div>
                 <p className="section-subtitle text-center md:text-left">
-                  Supercharge your job search with AI-powered CV analysis, personalized job recommendations, and a professional headshot.
+                  Supercharge your job search with AI-powered CV analysis and personalized job recommendations.
                 </p>
               </div>
             </div>
@@ -840,7 +840,7 @@ Collaborate with development teams and product managers to design and implement 
                   <h2 className="section-title">Hiring Manager?</h2>
                 </div>
                 <p className="section-subtitle text-center md:text-left">
-                  Find the best candidates faster with AI-driven CV screening, accurate job matching, and comprehensive LinkedIn profile insights.
+                  Find the best candidates faster with AI-driven CV screening and accurate job matching.
                 </p>
               </div>
             </div>
@@ -858,7 +858,7 @@ Collaborate with development teams and product managers to design and implement 
             </button>
           </div>
 
-          <div className="mt-10 pt-6 border-t border-gray-700/50 text-center">
+          {/* <div className="mt-10 pt-6 border-t border-gray-700/50 text-center">
             <p className="text-gray-400 text-sm">
               By signing in, you agree to our{" "}
               <a href="#" className="text-black font-medium">
@@ -869,7 +869,7 @@ Collaborate with development teams and product managers to design and implement 
                 Privacy Policy
               </a>
             </p>
-          </div>
+          </div> */}
         </div>
         <div className="mt-8 text-gray-400 text-sm text-center">
           © {new Date().getFullYear()} SiKepin. All rights reserved.

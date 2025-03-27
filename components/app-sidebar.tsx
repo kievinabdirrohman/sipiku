@@ -29,11 +29,11 @@ const items = [
     //     url: "/insider/headshot",
     //     isActive: false,
     // },
-    {
-        title: "LinkedIn Analyzer",
-        url: "/insider/linkedin",
-        isActive: false,
-    },
+    // {
+    //     title: "LinkedIn Analyzer",
+    //     url: "/insider/linkedin",
+    //     isActive: false,
+    // },
 ]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {

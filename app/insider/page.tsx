@@ -454,7 +454,7 @@ export default function JobAnalyzer() {
                                     )}
                                 />
                                 <Separator />
-                                {selectedRole === "candidate" && <FormField
+                                {/* {selectedRole === "candidate" && <FormField
                                     control={cv_form.control}
                                     name="using_linkedin"
                                     render={({ field }) => (
@@ -481,7 +481,7 @@ export default function JobAnalyzer() {
                                             </FormControl>
                                         </FormItem>
                                     )}
-                                />}
+                                />} */}
                                 <FormField
                                     control={cv_form.control}
                                     name="file"
