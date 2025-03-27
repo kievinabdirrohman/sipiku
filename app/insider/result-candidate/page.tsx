@@ -99,7 +99,7 @@ export default function ResultCandidate() {
                     <Download />
                     <span className="ml-2">Download CV</span>
                 </PDFDownloadLink>
-                <Button variant='outline' className="text-sm mt-16" onClick={() => router.push('/insider')}><ArrowBigLeft /> Back</Button>
+                <Button variant='outline' className="text-sm mt-10" onClick={() => router.push('/insider')}><ArrowBigLeft /> Back</Button>
             </div>}
         </>
     )

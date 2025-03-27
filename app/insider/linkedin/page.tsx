@@ -52,8 +52,8 @@ export default function LinkedInAnalyzer() {
 
     const formLinkedin = useForm<z.infer<typeof linkedinAccountSchema>>({
         defaultValues: {
-            email: 'kievin.abdrohman@gmail.com',
-            password: '@Kyven1298',
+            email: '',
+            password: '',
             recaptcha_token: "",
         },
     });

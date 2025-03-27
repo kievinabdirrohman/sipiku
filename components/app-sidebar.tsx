@@ -24,16 +24,11 @@ const items = [
         url: "/insider",
         isActive: false,
     },
-    // {
-    //     title: "Headshot",
-    //     url: "/insider/headshot",
-    //     isActive: false,
-    // },
-    // {
-    //     title: "LinkedIn Analyzer",
-    //     url: "/insider/linkedin",
-    //     isActive: false,
-    // },
+    {
+        title: "LinkedIn Analyzer",
+        url: "/insider/linkedin",
+        isActive: false,
+    },
 ]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {

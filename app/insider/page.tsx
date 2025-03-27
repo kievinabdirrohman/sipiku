@@ -454,7 +454,7 @@ export default function JobAnalyzer() {
                                     )}
                                 />
                                 <Separator />
-                                {/* {selectedRole === "candidate" && <FormField
+                                {selectedRole === "candidate" && <FormField
                                     control={cv_form.control}
                                     name="using_linkedin"
                                     render={({ field }) => (
@@ -481,7 +481,7 @@ export default function JobAnalyzer() {
                                             </FormControl>
                                         </FormItem>
                                     )}
-                                />} */}
+                                />}
                                 <FormField
                                     control={cv_form.control}
                                     name="file"
@@ -802,7 +802,7 @@ Collaborate with development teams and product managers to design and implement 
                             <Download />
                             <span className="ml-2">Download CV</span>
                         </PDFDownloadLink>
-                        <Button variant='outline' className="text-sm mt-16" onClick={() => location.reload()}><ArrowBigLeft /> Back</Button>
+                        <Button variant='outline' className="text-sm mt-10" onClick={() => location.reload()}><ArrowBigLeft /> Back</Button>
                     </div>
                 </>
             }
