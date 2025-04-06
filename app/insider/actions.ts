@@ -2,18 +2,11 @@
 
 import { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } from "@google/generative-ai";
 import { z } from 'zod';
-import { v2 as cloudinary } from 'cloudinary';
 
 import { pusher } from '@/lib/pusher'
 import { verifyRecaptcha } from "@/lib/helper";
 import { candidateSchema, cvSchema, jobPosterSchema, jobSchema, schemaCandidate, schemaHR, schemaInterview, schemaResult, textSchema } from "@/lib/schema";
 import { createClient } from "@/utils/supabase/server";
-
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
 const GOOGLE_GEMINI_API_KEY = process.env.GOOGLE_GEMINI_API_KEY;
 

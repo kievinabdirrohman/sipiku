@@ -52,8 +52,8 @@ export default function LinkedInAnalyzer() {
 
     const formLinkedin = useForm<z.infer<typeof linkedinAccountSchema>>({
         defaultValues: {
-            email: '',
-            password: '',
+            email: 'kievin.abdrohman@gmail.com',
+            password: '@Kyven1298',
             recaptcha_token: "",
         },
     });
@@ -122,6 +122,7 @@ export default function LinkedInAnalyzer() {
                             {errorMessage}
                         </AlertDescription>
                     </Alert>}
+                    <p className="text-center text-2xl font-semibold mb-10">Linkedin Profile Analysis</p>
                     <Form {...formLinkedin}>
                         <form onSubmit={formLinkedin.handleSubmit(submitLinkedIn)} className="space-y-4">
                             <FormField
